@@ -12,14 +12,15 @@ blackbox is Free Software under the terms of the GNU GPL 3.0.
 ## Implementation Status
 
 The following RFC-defined commands have been implemented already:
-*	QUIT as quit()
-*	NICK as nickname()
-*	USER as username()
-*	JOIN as join() (currently does not support multiple join requests)
-*	PART as part()
-*	PRIVMSG as say() (regular message) and action() (emote)
-*	MODE as mode()
-*	KICK as kick()
+
++ QUIT as quit()
++ NICK as nickname()
++ USER as username()
++ JOIN as join() (currently does not support multiple join requests)
++ PART as part()
++ PRIVMSG as say() (regular message) and action() (emote)
++ MODE as mode()
++ KICK as kick()
 
 For their respective keyword arguments refer to their docstrings.
 
