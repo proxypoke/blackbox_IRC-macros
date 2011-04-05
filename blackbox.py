@@ -15,7 +15,7 @@
 # blackbox IRC macros
 
 # (c) 2011 Proxy of KOS-MOS Productions
-# Contact or ask for me on the IRC of n0v4.com
+# Contact or ask for me on the IRC of irc.datnode.net
 
 # This program, hereafter called "blackbox", 
 # is Free Software under the terms of the 
