@@ -349,9 +349,85 @@ class IRC(object):
 		Keyword Arguments:
 			channel -- the target channel
 			user -- the target user
-			reason -- Optional. Specify a reason for the kick.'''
+			reason -- Optional. Specify a reason for the kick.
+		'''
 		if reason == "":
 			self.send("KICK {0} {1}".format(channel, user))
 		else:
 			self.send("KICK {0} {1} :{2}".format(channel, user, reason))
 
+
+	def away(self, message = ""):
+		'''Mark yourself as away, specifying a message to be sent to others. If 
+		message is omitted, the away status will be removed.
+
+		Keyword Arguments:
+			message -- Message to be sent. Must be omitted to unmark
+		'''
+		if message == "":
+			self.send("AWAY")
+		else:
+			self.send("AWAY {0}".format(message))
+
+
+	def invite(self, user, channel):
+		'''Invite a user to a channel.
+
+		Keyword Arguments;
+			user -- The user to invite
+			channel -- The channel to invite to
+		'''
+		self.send("INVITE {0] {1}".format(user, channel))
+
+
+	def notice(self, target, message):
+		'''Send a notice to a user or channel.
+
+		Keyword Arguments:
+			target -- Either a user or a channel (prefixed with the usual hash)
+			message -- The message to send
+		'''
+		self.send("NOTICE {0}, {1}".format(target, message)
+
+
+	def serverpassword(self, password):
+		'''Sends the server password (if required).
+
+		Keyword Arguments:
+			password -- The server password.
+		'''
+		self.send("PASS {0}".format(password))
+
+
+	def squery(self, servicename, message):
+		'''Not implemented.
+		'''
+		return NotImplemented
+
+
+	def summon(self, user, server = "", channel = ""):
+		'''Not implemented.
+		'''
+		return NotImplemented
+
+	def settopic(self, channel, topic):
+		'''Set the topic of a channel.
+		Note: To query for the topic use gettopic().
+
+		Keyword Arguments:
+			channel -- The channel to set the topic for
+			topic -- The text to set as the topic
+		'''
+		#convert to string
+		channel = str(channel)
+
+		# stop execution if the channel is an empty string
+		if len(channel) == 0:
+			return
+
+		# add the hash if it is missing
+		if channel[0] != '#':
+			channel = '#' + channel
+
+		# Set the topic
+		self.send("TOPIC {0} {1}".format(channel, topic))
