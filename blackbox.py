@@ -11,11 +11,13 @@
 #      | |  | | | (_) | (_| | |_| | (__| |_| | (_) | | | \__ \
 #      \_|  |_|  \___/ \__,_|\__,_|\___|\__|_|\___/|_| |_|___/
 
+# ASCII banner created with http://www.network-science.de/ascii/
+
 
 # blackbox IRC macros
 
 # (c) 2011 Proxy of KOS-MOS Productions
-# Contact or ask for me on the IRC of irc.datnode.net
+# Offical IRC channel: irc.datnode.net/#KOS-MOS
 
 # This program, hereafter called "blackbox", 
 # is Free Software under the terms of the 
@@ -387,7 +389,7 @@ class IRC(object):
 			target -- Either a user or a channel (prefixed with the usual hash)
 			message -- The message to send
 		'''
-		self.send("NOTICE {0}, {1}".format(target, message)
+		self.send("NOTICE {0}, {1}".format(target, message))
 
 
 	def serverpassword(self, password):
@@ -399,13 +401,13 @@ class IRC(object):
 		self.send("PASS {0}".format(password))
 
 
-	def squery(self, servicename, message):
+	def squery(self, servicename = "", message = ""):
 		'''Not implemented.
 		'''
 		return NotImplemented
 
 
-	def summon(self, user, server = "", channel = ""):
+	def summon(self, user = "", server = "", channel = ""):
 		'''Not implemented.
 		'''
 		return NotImplemented

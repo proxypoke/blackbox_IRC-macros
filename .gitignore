@@ -1,0 +1,2 @@
+# ignore python binaries
+*.pyc
