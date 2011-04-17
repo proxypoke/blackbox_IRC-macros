@@ -25,7 +25,7 @@
 # GNU General Public license, which can be found at 
 # http://www.gnu.org/copyleft/gpl.html.
 
-# Version 0.2 (alpha)
+# Version 0.3 (alpha)
 # blackbox is still in active developement.
 
 # Bugs:
