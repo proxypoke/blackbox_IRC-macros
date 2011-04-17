@@ -18,13 +18,14 @@
 
 # (c) 2011 Proxy of KOS-MOS Productions
 # Offical IRC channel: irc.datnode.net/#KOS-MOS
+# Offical repository on github: https://github.com/proxypoke/blackbox_IRC-macros
 
 # This program, hereafter called "blackbox", 
 # is Free Software under the terms of the 
 # GNU General Public license, which can be found at 
 # http://www.gnu.org/copyleft/gpl.html.
 
-# Version 0.1
+# Version 0.2 (alpha)
 # blackbox is still in active developement.
 
 # Bugs:
@@ -145,7 +146,7 @@ class IRC(object):
 		currentTime = ":".join(currentTime)
 
 		# write to log
-		self.logfile.write("{0} -- {1}\n".format(currentTime, data))
+		self.logfile.write("{0} {1}\n".format(currentTime, data))
 
 
 	def close(self):
@@ -195,6 +196,9 @@ class IRC(object):
 		# convert to string
 		data = str(data)
 
+		if self.logging:
+			self.logWrite("<-- " + data)
+
 		# send data and add the trailing carriage return
 		self.irc.send(data + "\r\n")
 
@@ -217,7 +221,7 @@ class IRC(object):
 
 		# write to log if logging is active
 		if self.logging:
-			self.logWrite(data)
+			self.logWrite("--> " + data)
 
 		# answer to pings
 		if "PING" in data:
@@ -237,6 +241,9 @@ class IRC(object):
 			self.send("QUIT")
 		else:
 			self.send("QUIT :{0}".format(quitmsg))
+
+		# set self.isConnected to False
+		self.isConnected = False
 
 
 	def nickname(self, nick):
@@ -261,51 +268,69 @@ class IRC(object):
 		self.send("USER {0} {0} {0} :{1}.".format(user, real))
 
 
-	def join(self, channel, keyword = ""):
-		'''Try to join a channel.
+	def join(self, channels, keywords = ""):
+		'''Try to join a number of channels, with optional keywords.
 
 		Keyword Arguments:
-			channel -- the target channel
-			keyword -- Optional. For channels with mode +k.
+			channels -- the target channels, separated by ','
+			keywords -- Optional. For channels with mode +k, separated by ','
+		
+		Note: When joining multiple channels with and without mode +k, either
+		put the channels with +k first so their keywords get assigned correctly,
+		or replace empty keywords with '*'. The first method is advised.
 		'''
 		# convert to string
-		channel = str(channel)
-
+		channel = str(channels)
 		# stop execution if the channel is an empty string
-		if len(channel) == 0:
+		if len(channels) == 0:
 			return
 
-		# add the hash if it is missing
-		if channel[0] != '#':
-			channel = '#' + channel
+		# split the channels string at every comma
+		split = channels.split(',')
+
+		# add the hash for every channel if it is missing
+		channels = ""
+		for channel in split:
+			if channel[0] != '#':
+				channel = '#' + channel + ','
+				channels += channel
 
 		# send join request to server
-		self.send("JOIN {0} {1}".format(channel, keyword))
+		if keywords == "":
+			self.send("JOIN {0}".format(channels))
+		else:
+			self.send("JOIN {0} {1}".format(channels, keywords))
 
 
-	def part(self, channel, partmsg = ""):
-		'''Part a channel. Optionally send a part message.
+	def part(self, channels, partmsg = ""):
+		'''Part one or more channels. Optionally send a part message.
 
 		Keyword Arguments:
-			channel -- the target channel
-			partmsg -- Optional. A part message sent along the PART command.
+			channel -- the target channels, separated by ','
+			partmsg -- Optional. A part message sent along with the PART command
 		'''
 		#convert to string
-		channel = str(channel)
+		channel = str(channels)
 
 		# stop execution if the channel is an empty string
-		if len(channel) == 0:
+		if len(channels) == 0:
 			return
 
-		# add the hash if it is missing
-		if channel[0] != '#':
-			channel = '#' + channel
+		# split the channels string at every comma
+		split = channels.split(',')
+
+		# add the hash for every channel if it is missing
+		channels = ""
+		for channel in split:
+			if channel[0] != '#':
+				channel = '#' + channel + ','
+				channels += channel
 
 		# no part message given
 		if partmsg == "":
-			self.send("PART {0}".format(channel))
+			self.send("PART {0}".format(channels))
 		else:
-			self.send("PART {0} :{1}".format(channel, partmsg))
+			self.send("PART {0} :{1}".format(channels, partmsg))
 
 
 	def say(self, target, msg):
@@ -329,19 +354,18 @@ class IRC(object):
 		self.send("PRIVMSG {0} :\x01ACTION {1}\x01".format(target, msg))
 
 
-	def mode(self, channel, mode, users = ""):
-		'''Set the mode(s) of a channel or (a) user(s) on a channel.
-		Usually requires privileges in that channel.
+	def mode(self, target, mode, args = ""):
+		'''Set the mode(s) of a channel or user, with optional arguments.
 
 		Keyword Arguments:
-			channel -- the target channel
+			target -- the target channel or user
 			mode -- one or more valid mode characters
-			users -- Optional. One or more users separated by spaces.
+			args -- Optional. One or more arguments (eg usernames).
 		'''
-		if users == "":
-			self.send("MODE {0} {1}".format(channel, mode))
+		if args == "":
+			self.send("MODE {0} {1}".format(target, mode))
 		else:
-			self.send("MODE {0} {1} {2}".format(channel, mode, users))
+			self.send("MODE {0} {1} {2}".format(target, mode, args))
 
 
 	def kick(self, channel, user, reason = ""):
