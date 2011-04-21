@@ -53,6 +53,11 @@ class IRC(object):
 	encapsuling most of the commonly used low level functions to handy,
 	callable functions.
 
+	Note: This version of blackbox does not contain commands meant for IRC
+	Operators (KILL etc). There is a another module called blackbox_oper 
+	that implements	these commands in addition to all commands found in 
+	this version.
+
 	Attributes defined in this class:
 		irc -- the socket.socket object
 		socketOpen -- indicates the state of the socket (True = open)
@@ -61,7 +66,7 @@ class IRC(object):
 		logfile -- the file to which the log is written
 		data -- stores the data received from the last call of recv()
 
-	Non-RFC-Methods defined in this class:
+	Regular Methods defined in this class:
 		__init__([logging])
 		logWrite(data)
 		close()
@@ -69,7 +74,7 @@ class IRC(object):
 		send(data)
 		recv([bufferlen])
 
-	RFC-Methods defined in this class:
+	Methods implementing RFC commands defined in this class:
 		quit([quitmsg])
 		nickname(nick)
 		username(user, real)
@@ -79,6 +84,29 @@ class IRC(object):
 		action(target, msg)
 		mode(channel, mode [, users])
 		kick(channel, user [, reason])
+		away(message)
+		invite(nickname, channel)
+		notice(target, message)
+		serverpassword(password)
+		settopic(channel, topic)
+		admin([server])
+		info([server]
+		ison(nicknames)
+		links([servmask [, server]])
+		chanlist([channels [, server]])
+		lusers([mask [, server]])
+		names([channels [, server]])
+		servlist([mask [, type_]])
+		stats(query [, server])
+		time([server])
+		gettopic(channel)
+		trace([target])
+		userhost(nicknames)
+		users([server])
+		version([server])
+		who(mask [, oponly])
+		whois(nickname [, server])
+		whowas(nickname [, count [, server]])
 	'''
 
 	def __init__(self, logging = False):
@@ -160,7 +188,8 @@ class IRC(object):
 
 
 	def connect(self, host, port):
-		'''Connect to a network with the given adress on the given port.
+		'''Connect to a network with the given adress on the given port. Will do
+		nothing when self.isConnected is True.
 
 		Keyword Arguments:
 			host -- the network's adress, either a DNS entry or an IP
@@ -185,7 +214,7 @@ class IRC(object):
 
 		
 	def send(self, data):
-		'''Send raw data to the IRC server, adding the trailing \\r\\n.
+		'''Send raw data to the IRC server, adding the trailing CRNL.
 
 		Keyword Arguments:
 			data -- a string describing a command to the server
@@ -199,7 +228,7 @@ class IRC(object):
 		if self.logging:
 			self.logWrite("<-- " + data)
 
-		# send data and add the trailing carriage return
+		# send data and add the trailing CRNL
 		self.irc.send(data + "\r\n")
 
 
@@ -225,7 +254,7 @@ class IRC(object):
 
 		# answer to pings
 		if "PING" in data:
-			self.send("PONG " + data[1])
+			self.send("PONG " + data.split()[1])
 
 		# save to internal storage and return received data
 		self.data = data
@@ -280,7 +309,7 @@ class IRC(object):
 		or replace empty keywords with '*'. The first method is advised.
 		'''
 		# convert to string
-		channel = str(channels)
+		channels = str(channels)
 		# stop execution if the channel is an empty string
 		if len(channels) == 0:
 			return
@@ -291,9 +320,12 @@ class IRC(object):
 		# add the hash for every channel if it is missing
 		channels = ""
 		for channel in split:
-			if channel[0] != '#':
-				channel = '#' + channel + ','
-				channels += channel
+			if channel != "":
+				if channel[0] != '#':
+					channel = '#' + channel + ','
+					channels += channel
+				else:
+					channels += channel
 
 		# send join request to server
 		if keywords == "":
@@ -310,7 +342,7 @@ class IRC(object):
 			partmsg -- Optional. A part message sent along with the PART command
 		'''
 		#convert to string
-		channel = str(channels)
+		channels = str(channels)
 
 		# stop execution if the channel is an empty string
 		if len(channels) == 0:
@@ -322,9 +354,12 @@ class IRC(object):
 		# add the hash for every channel if it is missing
 		channels = ""
 		for channel in split:
-			if channel[0] != '#':
-				channel = '#' + channel + ','
-				channels += channel
+			if channel != "":
+				if channel[0] != '#':
+					channel = '#' + channel + ','
+					channels += channel
+				else:
+					channels += channel
 
 		# no part message given
 		if partmsg == "":
@@ -457,3 +492,319 @@ class IRC(object):
 
 		# Set the topic
 		self.send("TOPIC {0} {1}".format(channel, topic))
+
+
+	def admin(self, target = ""):
+		'''Requests information about the administrator of the local server, or,
+		if target is specified, the server of the target (wildcards accepted).
+
+		Keyword Arguments:
+			target -- Optional. Forward the request to the server of target
+				(can be a client or a server)
+		'''
+		if target == "":
+			self.send("ADMIN")
+		else:
+			self.send("ADMIN {0}".format(target))
+
+
+	def info(self, target = ""):
+		'''Requests information about the local server, or, if target is
+		specified, the server of the target (wildcards accepted).
+
+		Keyword Arguments:
+			target -- Optional. Forward the request to the server of target
+				(can be a client or a server)
+		'''
+		if target == "":
+			self.send("INFO")
+		else:
+			self.send("INFO {0}".format(target))
+
+
+	def ison(self, nicknames):
+		'''Requests information about the online status of one or more 
+		nicknames. The server returns all nicknames that are currently online.
+
+		Keyword Arguments:
+			nicknames -- Either a space separated string of nicknames, or a 
+				python list of strings.
+		'''
+		# check type of kwarg
+		if type(nicknames) == str:
+			pass
+		if type(nicknames) == list:
+			nicknames = " ".join(nicknames)
+
+		self.send("ISON {0}".format(nicknames))
+
+
+	def links(self, servmask = "", server = ""):
+		'''Queries the specified server, or, if omitted, the local server,
+		for a list of known servers matching servmask. If servmask is omitted,
+		all known servers are returned.
+
+		Keyword Arguments:
+			servmask -- Optional. Only servers matching servmask will be 
+				returned. Accepts wildcards.
+			server -- Optional. Queries the specified server instead of the 
+				local server.
+		'''
+		if servmask == "" and server == "":
+			self.send("LINKS")
+		elif server == "":
+			self.send("LINKS {0}".format(servmask))
+		else:
+			self.send("LINKS {1} {0}".format(servmask, server))
+
+
+	def chanlist(self, channels = "", server = ""):
+		'''Queries for a list of channels and their topics. If channels is 
+		specified, lists only the status of those channels. If server is 
+		specified, forwards the request to that server.
+
+		Keyword Arguments:
+			channels - Optional. Requests only the listed channels, separated
+				by ','
+			server -- Optional. Forwards the request to the specified server.
+				Accepts wildcards.
+		'''
+		# convert to string
+		channels = str(channels)
+
+
+		# split the channels string at every comma
+		split = channels.split(',')
+
+		# add the hash for every channel if it is missing
+		channels = ""
+		for channel in split:
+			if channel != "":
+				if channel[0] != '#':
+					channel = '#' + channel + ','
+					channels += channel
+				else:
+					channels += channel
+
+		# Send the request
+		if server == "":
+			self.send("LIST {0}".format(channels))
+		else:
+			self.send("LIST {0} {1}".format(channels, server))
+
+	def lusers(self, mask = "", server = ""):
+		'''Gets statistics about the size of the IRC network. Without mask, the
+		reply will be about the whole network, else about the parts that match
+		mask. If server is omitted, the local server will be queried, else the
+		query will be forwarded to server.
+
+		Keyword Arguments:
+			mask -- Optional. Narrows down the query, matching mask.
+			server -- Optional. Forwards the query to server.
+		'''
+		if mask == "" and server == "":
+			self.send("LUSERS")
+		elif server == "":
+			self.send("LUSERS {0}".format(mask))
+		else:
+			self.send("LUSERS {0} {1}".format(mask, server))
+
+
+	def names(self, channels = "", server = ""):
+		'''Queries for a list of nicknames sorted by channel that are visible to
+		the client. If channels is specified, only lists for those channels are
+		returned. If server is given, the request is forwarded to that server.
+
+		Keyword Arguments:
+			channels - Optional. A list of channels separated by ','
+			server -- Optional. Forwards the request to a server. Wildcards
+				accepted.
+		'''
+				# convert to string
+		channels = str(channels)
+		# stop execution if the channel is an empty string
+
+		# split the channels string at every comma
+		split = channels.split(',')
+
+		# add the hash for every channel if it is missing
+		channels = ""
+		for channel in split:
+			if channel != "":
+				if channel[0] != '#':
+					channel = '#' + channel + ','
+					channels += channel
+				else:
+					channels += channel
+
+		# send the request
+		if channels == "" and server == "":
+			self.send("NAMES")
+		elif server == "":
+			self.send("NAMES {0}".format(channels))
+		else:
+			self.send("NAMES {0} {1}".format(channels, server))
+
+
+	def servlist(self, mask = "", type_ = ""):
+		'''Lists services connected to the network and visible to the user, 
+		matching mask if specified and of the matching type if specified.
+
+		Keyword Arguments:
+			mask -- Optional. Narrows down the matches. Wildcards accepted.
+			type_ -- Optional. Only services matching type_ will be returned.
+		'''
+		if mask == "" and type_ == "":
+			self.send("SERVLIST")
+		elif type_ == "":
+			self.send("SERVLIST {0}".format(mask))
+		else:
+			self.send("SERVLIST {0} {1}".format(mask, type_))
+
+
+	def stats(self, query, server = ""):
+		'''Queries for certain server statistics. If note specified otherwise by
+		the server argument, the local server is queried.
+
+		Keyword Arguments:
+			query -- A letter describing the query. Mostly implementation 
+				dependant. The following SHOULD be supported by all servers:
+					l -- a list of the server's connections, their length and 
+						bandwidth usage
+					m -- usage count of all commands supported by the server
+					o -- a list of privileged users, operators
+					u -- server uptime
+			server -- Optional. Forwards the request to a server. Wildcards
+				accepted.
+		'''
+		if server == "":
+			self.send("STATS {0}".format(query))
+		else:
+			self.send("STATS {0} {1}".format(query, server))
+
+
+	def time(self, server = ""):
+		'''Queries the local time of the local server, or a remote server if 
+		specified.
+
+		Keyword Arguments:
+			server -- Optional. Forwards the request to a server. Wildcards
+				accepted.
+		'''
+		if server == "":
+			self.send("TIME")
+		else:
+			self.send("TIME {0}".format(server))
+
+
+	def gettopic(self, channel):
+		'''Queries for the topic of a channel.
+		Note: To set the topic of a channel use settopic().
+
+		Keyword Arguments:
+			channel -- The channel for which the topic is queried
+		'''
+		self.send("TOPIC {0}".format(channel))
+
+
+	def trace(self, server = ""):
+		'''Traces a route to the local or a remote server, if specified.
+
+		Keyword Arguments:
+			server --  Optional. Forwards the request to a server. Wildcards
+				accepted.
+		'''
+		if server == "":
+			self.send("TRACE")
+		else:
+			self.send("TRACE {0}".format(server))
+
+
+	def userhost(self, nicknames):
+		'''Queries for host information about the given nicknames.
+
+		Keyword Arguments:
+			nicknames -- A space separated string of nicknames or a python list
+				of strings.
+		'''
+		# check the kwarg for type, replace if necessary
+		if type(nicknames) == str:
+			pass
+		elif type(nicknames) == list:
+			nicknames = " ".join(nicknames)
+
+		self.send("USERHOST {0}".format(nicknames))
+
+	def users(self, server = ""):
+		'''Queries for a list of users logged into the server.
+		Note: Disabled on most servers for security reasons.
+
+		Keyword Arguments:
+			server --  Optional. Forwards the request to a server. Wildcards
+				accepted.
+		'''
+		if server == "":
+			self.send("USERS")
+		else:
+			self.send("USERS {0}".format(server))
+
+
+	def version(self, server = ""):
+		'''Queries for the version of the server program.
+
+			server --  Optional. Forwards the request to a server. Wildcards
+				accepted.
+		'''
+		if server == "":
+			self.send("VERSION")
+		else:
+			self.send("VERSION {0}".format(server))
+
+
+	def who(self, mask = "", oponly = False):
+		'''Queries for a list of information about all users matching mask, or, if
+		mask is omitted, all users who aren't invisible (mode +i). If oponly is
+		True, only operators matching mask will be listed.
+
+		Keyword Arguments:
+			mask -- Optional. Narrows down the query. Wildcards accepted.
+			oponly -- Optional. List only Operators. Defaults to False.
+		'''
+		if mask == "" and not oponly:
+			self.send("WHO")
+		elif not oponly:
+			self.send("WHO {0}".format(mask))
+		else:
+			self.send("WHO {0} o".format(mask))
+
+
+	def whois(self, nickname, server = ""):
+		'''Queries for information about a specific user.
+
+		Keyword Arguments:
+			nickname -- The nickname to query.
+			server -- Optional. Forwards the request to a server. Wildcards
+				accepted.
+		'''
+		if server == "":
+			self.send("WHOIS {0}".format(nickname))
+		else:
+			self.send("WHOIS {1} {0}".format(nickname, server))
+
+
+	def whowas(self, nickname, count = "", server = ""):
+		'''Queries for information about a nickname that no longer exists.
+
+		Keyword Arguments:
+			nickname -- The nickname to query
+			count -- Optional. Limits the maximum amount of entries that are
+				returned, if any.
+			server -- Optional. Forwards the request to a server. Wildcards
+				accepted.
+		'''
+		if count == "" and server == "":
+			self.send("WHOWAS {0}".format(nickname))
+		elif server == "":
+			self.send("WHOWAS {0} {1}".format(nickname, count))
+		else:
+			self.send("WHOWAS {0} {1} {2}".format(nickname, count, server))

@@ -25,7 +25,7 @@
 # GNU General Public license, which can be found at 
 # http://www.gnu.org/copyleft/gpl.html.
 
-# Version 0.3 (alpha)
+# Version 1.0 (beta)
 # blackbox is still in active developement.
 
 # Bugs:
@@ -45,7 +45,7 @@ class IRC(blackbox.IRC):
 
 	WARNING: ALL COMMANDS ARE UNTESTED. USE AT OWN RISK!
 
-	RFC-Methods for Opers defined in this class:
+	Methods implementing RFC commands for Opers defined in this class:
 		servconnect(targetserv, port [, remoteserv])
 		die()
 		kill(client, comment)
