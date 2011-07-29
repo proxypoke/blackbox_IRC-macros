@@ -26,7 +26,7 @@ other application communicating with an IRC server as well.
 
 Copyright (c) Proxy of KOS-MOS Productions 
 
-Official IRC channel: [irc://irc.datnode.net/KOS-MOS](irc.datnode.net/#KOS-MOS)
+Official IRC channel: [irc://irc.datnode.net/KOS-MOS](irc://irc.datnode.net/KOS-MOS)
 
 blackbox is Free Software under the terms of the [GNU General Public License 
 v3](http://www.gnu.org/licenses/gpl.html).
