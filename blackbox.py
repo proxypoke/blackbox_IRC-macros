@@ -14,7 +14,7 @@
 # blackbox IRC macros
 
 # (c) 2011 Proxy of KOS-MOS Productions
-# Offical IRC channel: irc.datnode.net/#KOS-MOS
+# Offical IRC channel: irc://irc.datnode.net/KOS-MOS
 # Offical repository on github: https://github.com/proxypoke/blackbox_IRC-macros
 
 # This program, hereafter called "blackbox", 
@@ -32,7 +32,7 @@ class IRC(blackbox_core.Core):
 	IRC class: This class implements composite methods and macros based
 	on the basic methods contained in the Core class. 
 	It does not contain commands only usable by IRC Operators, these are 
-	contained in the OperCore class.
+	contained in the Oper class.
 
 	'''
 	def __init__(self, logging = False):

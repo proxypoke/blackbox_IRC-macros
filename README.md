@@ -26,7 +26,7 @@ other application communicating with an IRC server as well.
 
 Copyright (c) Proxy of KOS-MOS Productions 
 
-Official IRC channel: [irc.datnode.net/#KOS-MOS](irc.datnode.net/#KOS-MOS)
+Official IRC channel: [irc://irc.datnode.net/KOS-MOS](irc.datnode.net/#KOS-MOS)
 
 blackbox is Free Software under the terms of the [GNU General Public License 
 v3](http://www.gnu.org/licenses/gpl.html).
@@ -41,16 +41,5 @@ those outlined in the terms of the GNU GPL v3.
 
 ## Implementation Status & Roadmap
 
-The current state of the RFC implementation of the develop branch can be found 
-[on the wiki of this project]
-(https://github.com/proxypoke/blackbox_IRC-macros/wiki/Status-of-RFC-Implementation).
+Coming again soon...
 
-There is also a roadmap, which can be found [on the wiki as well]
-(https://github.com/proxypoke/blackbox_IRC-macros/wiki/Roadmap).
-
-## Branching
-
-I'm trying out the branching model described [here]
-(http://nvie.com/posts/a-successful-git-branching-model/). Although overkill 
-for such a small, one-man project, I'd like to get used to this style of 
-version control.
