@@ -1,2 +1,4 @@
 # ignore python binaries
 *.pyc
+# ignore vim swaps
+*.swp

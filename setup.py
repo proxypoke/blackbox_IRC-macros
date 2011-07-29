@@ -11,10 +11,7 @@
 #      | |  | | | (_) | (_| | |_| | (__| |_| | (_) | | | \__ \
 #      \_|  |_|  \___/ \__,_|\__,_|\___|\__|_|\___/|_| |_|___/
 
-# ASCII banner created with http://www.network-science.de/ascii/
-
-
-# blackbox IRC macros - setup.py
+# blackbox IRC macros
 
 # (c) 2011 Proxy of KOS-MOS Productions
 # Offical IRC channel: irc.datnode.net/#KOS-MOS
@@ -25,9 +22,6 @@
 # GNU General Public license, which can be found at 
 # http://www.gnu.org/copyleft/gpl.html.
 
-# Version 1.0 (beta)
-# blackbox is still in active developement.
-
 from distutils.core import setup
 
 setup(
@@ -37,5 +31,5 @@ setup(
 	description = 'A Python module to abstract and encapsulate the IRC protocol',
 	url = 'https://github.com/proxypoke/blackbox_IRC-macros',
 	license = 'GNU General Public License v3',
-	py_modules = ['blackbox', 'blackbox_oper'],
+	py_modules = ['blackbox', 'blackbox_core'],
 	)

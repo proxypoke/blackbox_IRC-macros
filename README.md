@@ -13,10 +13,6 @@
       | |  | | | (_) | (_| | |_| | (__| |_| | (_) | | | \__ \
       \_|  |_|  \___/ \__,_|\__,_|\___|\__|_|\___/|_| |_|___/
 
-ASCII banner created with [http://www.network-science.de/ascii/]
-(http://www.network-science.de/ascii/)
-
-
 ## About
 
 This python module - simply called blackbox from here on - is intended to 
