@@ -49,16 +49,16 @@ class Core(object):
 	Operators, these are contained in the OperCore class.
 
 	Attributes defined in this class:
-		irc -- the socket.socket object
-		socketOpen -- indicates the state of the socket (True = open)
-		isConnected -- indicates the state of the connection (True = connected)
-		logging -- indicates whether a log is maintained or not (True = active)
-		logfile -- the file to which the log is written
+		_irc -- the socket.socket object
+		_socketOpen -- indicates the state of the socket (True = open)
+		_isConnected -- indicates the state of the connection (True = connected)
+		_logging -- indicates whether a log is maintained or not (True = active)
+		_logfile -- the file to which the log is written
 		data -- stores the data received from the last call of recv()
 
 	Regular Methods defined in this class:
 		__init__([logging])
-		logWrite(data)
+		_logWrite(data)
 		close()
 		connect(host, port)
 		send(data)
@@ -107,24 +107,24 @@ class Core(object):
 			logging -- Optional. Turns on logging. Defaults to False.
 		'''
 		# create the socket
-		self.irc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-		self.socketOpen = True
+		self._irc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		self._socketOpen = True
 
-		self.isConnected = False
+		self._isConnected = False
 
 		# storage for received data
 		self.data = None
 
 		# create a dated log file if logging is turned on
-		self.logging = logging
-		if self.logging:
+		self._logging = logging
+		if self._logging:
 			# replace spaces with underscore
 			currentTime = time.asctime().replace(" ", "_")
 			# replace colons with hyphen
 			currentTime = currentTime.replace(":", "-")
 			# create logfile
 			try:
-				self.logfile = open("blackbox_log_{0}.txt".format(currentTime), "w")
+				self._logfile = open("blackbox_log_{0}.txt".format(currentTime), "w")
 			except IOError:
 				print "An error occured while trying to create the logfile."
 				while True:
@@ -134,24 +134,24 @@ class Core(object):
 						continue
 					
 					elif input_ == "y":
-						self.logging = False
-						self.logfile = None
+						self._logging = False
+						self._logfile = None
 						break
 					else:
 						print "Aborting..."
 						quit()
 		else:
-			self.logfile = None
+			self._logfile = None
 			
 
-	def logWrite(self, data):
+	def _logWrite(self, data):
 		'''Write to the log file.
 
 		Keyword Arguments:
 			data -- the data to write into the file.
 		'''
 		# abort if the function was called without a file object present
-		if self.logfile == None:
+		if self._logfile == None:
 			raise IOError("No log file present.")
 		# get current local time hh:mm:ss
 		getTime = time.localtime()[3:6]
@@ -164,31 +164,31 @@ class Core(object):
 		currentTime = ":".join(currentTime)
 
 		# write to log
-		self.logfile.write("{0} {1}\n".format(currentTime, data))
+		self._logfile.write("{0} {1}\n".format(currentTime, data))
 
 
 	def close(self):
 		'''Close the socket, set socketOpen to False. 
 		Also close the log file if logging was active.'''
-		if self.socketOpen:
-			self.irc.close()
-			self.socketOpen = False
-		if self.logging:
-			self.logfile.close()
+		if self._socketOpen:
+			self._irc.close()
+			self._socketOpen = False
+		if self._logging:
+			self._logfile.close()
 
 
 	def connect(self, host, port):
 		'''Connect to a network with the given adress on the given port. Will do
-		nothing when self.isConnected is True.
+		nothing when self._isConnected is True.
 
 		Keyword Arguments:
 			host -- the network's adress, either a DNS entry or an IP
 			port -- the port on which the connection will run
 		'''
-		if not self.socketOpen:
+		if not self._socketOpen:
 			raise socket.error("The socket is closed.")
 		# do nothing if a connection is already established
-		if self.isConnected:
+		if self._isConnected:
 			return
 
 		# convert types and abort on error
@@ -199,8 +199,8 @@ class Core(object):
 			raise TypeError("'port' parameter expects an integer. Got '{0}', which is {1}.".format(port, type(port)))
 
 		# initiate the connection
-		self.irc.connect((host, port))
-		self.isConnected = True
+		self._irc.connect((host, port))
+		self._isConnected = True
 
 		
 	def send(self, data):
@@ -209,16 +209,16 @@ class Core(object):
 		Keyword Arguments:
 			data -- a string describing a command to the server
 		'''
-		if not self.isConnected:
+		if not self._isConnected:
 			raise IRCError("No active connection.")
 
 		data = str(data)
 
-		if self.logging:
-			self.logWrite("<-- " + data)
+		if self._logging:
+			self._logWrite("<-- " + data)
 
 		# send data and add the trailing CRNL
-		self.irc.send(data + "\r\n")
+		self._irc.send(data + "\r\n")
 
 
 	def recv(self, bufferlen = 4096):
@@ -228,18 +228,18 @@ class Core(object):
 		Keyword Arguments:
 			bufferlen -- Optional. Changes the size of the buffer. Defaults to 4096.
 		'''
-		if not self.isConnected:
+		if not self._isConnected:
 			raise IRCError("No active connection.")
 
-		data = self.irc.recv(bufferlen)
+		data = self._irc.recv(bufferlen)
 
 		# strip \r\n
 		data = data.strip("\r")
 		data = data.strip("\n")
 
 		# write to log if logging is active
-		if self.logging:
-			self.logWrite("--> " + data)
+		if self._logging:
+			self._logWrite("--> " + data)
 
 		# answer to pings
 		if "PING" in data:
@@ -260,8 +260,7 @@ class Core(object):
 		else:
 			self.send("QUIT :{0}".format(quitmsg))
 
-		# set self.isConnected to False
-		self.isConnected = False
+		self._isConnected = False
 
 
 	def nickname(self, nick):

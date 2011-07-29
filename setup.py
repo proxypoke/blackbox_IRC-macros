@@ -14,7 +14,7 @@
 # blackbox IRC macros
 
 # (c) 2011 Proxy of KOS-MOS Productions
-# Offical IRC channel: irc.datnode.net/#KOS-MOS
+# Offical IRC channel: irc://irc.datnode.net/KOS-MOS
 # Offical repository on github: https://github.com/proxypoke/blackbox_IRC-macros
 
 # This program, hereafter called 'blackbox', 
