@@ -29,22 +29,22 @@ class IRC(blackbox_core.Core):
     encapsuling most of the commonly used low level functions to handy,
     callable functions.
 
-	IRC class: This class implements composite methods and macros based
-	on the basic methods contained in the Core class. 
-	It does not contain commands only usable by IRC Operators, these are 
-	contained in the Oper class.
+    IRC class: This class implements composite methods and macros based
+    on the basic methods contained in the Core class. 
+    It does not contain commands only usable by IRC Operators, these are 
+    contained in the Oper class.
 
-	'''
-	def __init__(self, logging = False):
-		'''Initializes the blackbox module. Pass on the logging parameter.
+    '''
+    def __init__(self, logging = False):
+        '''Initializes the blackbox module. Pass on the logging parameter.
 
             Keyword Arguments:
                 logging -- Optional. Turns on logging. Defaults to False.
         '''
-		blackbox_core.Core.__init__(self, logging)
+        blackbox_core.Core.__init__(self, logging)
 
 
-	
+    
 
 
 ###########################
@@ -59,14 +59,14 @@ class Oper(IRC, blackbox_core.OperCore):
     '''A package of macros simplifying communication with an IRC server,
     encapsuling most of the commonly used low level functions to handy,
     callable functions.
-	'''
-	
-	def __init__(self, logging = False):
-		'''Initializes the blackbox module. Pass on the logging parameter.
+    '''
+    
+    def __init__(self, logging = False):
+        '''Initializes the blackbox module. Pass on the logging parameter.
 
             Keyword Arguments:
                 logging -- Optional. Turns on logging. Defaults to False.
         '''
-		IRC.__init__(self, logging)
-		blackbox_core.Core.__init__(self)
+        IRC.__init__(self, logging)
+        blackbox_core.Core.__init__(self)
 

@@ -38,6 +38,15 @@ compensation. You may not restrict these freedoms for any version of this
 software including derivates, and you cannot add any other restriction beyond 
 those outlined in the terms of the GNU GPL v3.
 
+## Installation
+
+Currently there is but one way to install blackbox: download the source and run setup.py
+with the 'install' parameter (you might need adminstrative privileges). 
+
+A PyPI entry for blackbox is in the works. Once that is done, you will be able to use 
+[easy\_install](http://peak.telecommunity.com/DevCenter/EasyInstall) or 
+[pip](http://pypi.python.org/pypi/pip) to install blackbox.
+
 
 ## Implementation Status & Roadmap
 
