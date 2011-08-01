@@ -25,11 +25,11 @@
 from distutils.core import setup
 
 setup(
-	name = 'blackbox',
-	version = '0.4',
-	author = 'Proxy',
-	description = 'A Python module to abstract and encapsulate the IRC protocol',
-	url = 'https://github.com/proxypoke/blackbox_IRC-macros',
-	license = 'GNU General Public License v3',
-	py_modules = ['blackbox', 'blackbox_core'],
-	)
+    name = 'blackbox',
+    version = '0.4',
+    author = 'Proxy',
+    description = 'A Python module to abstract and encapsulate the IRC protocol',
+    url = 'https://github.com/proxypoke/blackbox_IRC-macros',
+    license = 'GNU General Public License v3',
+    py_modules = ['blackbox', 'blackbox_core'],
+    )
