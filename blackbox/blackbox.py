@@ -35,13 +35,11 @@ class IRC(blackbox_core.Core):
     contained in the Oper class.
 
     '''
-    def __init__(self, logging = False):
-        '''Initializes the blackbox module. Pass on the logging parameter.
-
-            Keyword Arguments:
-                logging -- Optional. Turns on logging. Defaults to False.
+    def __init__(self, **kwargs):
+        '''Initializes the blackbox module. Pass on the keyword
+        arguments. For documentation see Core's __init__.
         '''
-        blackbox_core.Core.__init__(self, logging)
+        blackbox_core.Core.__init__(self, **kwargs)
 
 
     
@@ -62,10 +60,8 @@ class Oper(IRC, blackbox_core.OperCore):
     '''
     
     def __init__(self, logging = False):
-        '''Initializes the blackbox module. Pass on the logging parameter.
-
-            Keyword Arguments:
-                logging -- Optional. Turns on logging. Defaults to False.
+        '''Initializes the blackbox module. Pass on the keyword
+        arguments. For documentation see Core's __init__.
         '''
         IRC.__init__(self, logging)
         blackbox_core.Core.__init__(self)

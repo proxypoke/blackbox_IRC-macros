@@ -99,34 +99,60 @@ class Core(object):
         whowas(nickname [, count [, server]])
     '''
 
-    def __init__(self, logging = False):
+    def __init__(self, **kwargs):
         '''Initialize the object, create the socket, set the attributes to
         their default values. Create a log file if logging is set to True.
 
         Keyword Arguments:
-            logging -- Optional. Turns on logging. Defaults to False.
+            logging -- Turn on logging. Defaults to False.
+            logfile -- Specify a logfile. Defaults to blackbox_log.txt
+            pretend -- This puts blackbox into Pretend Mode.
+                            Pretend Mode will cause blackbox to
+                            be able to "pretend" as if it has connected
+                            to a server and reroute everything that
+                            would have been send to the server by send()
+                            to the standard output. It's for testing
+                            purposes.
+                            Defaults to False.
         '''
+        keywords = [
+                "logging",
+                "logfile",
+                "pretent",
+                ]
+        for keyword in keywords:
+            if keyword not in kwargs:
+                kwargs[keyword] = False
+
+        self._logging = kwargs['logging']
+        self._logFile = kwargs['logfile']
+        self._pretend = kwargs['pretend']
+
+        if not self._logFile:
+            self._logFile = "blackbox_log.txt"
+
         # create the socket
         self._irc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self._socketOpen = True
 
-        self._isConnected = False
+        # Pretend Mode
+        if self._pretend:
+            self._isConnected = True
+        else:
+            self._isConnected = False
 
         # storage for received data
         self.data = None
 
         # create a dated log file if logging is turned on
-        self._logging = logging
         if self._logging:
-            # replace spaces with underscore
-            currentTime = time.asctime().replace(" ", "_")
-            # replace colons with hyphen
-            currentTime = currentTime.replace(":", "-")
-            # create logfile
             try:
-                self._logfile = open("blackbox_log_{0}.txt".format(currentTime), "w")
+                self._logfile = open(self._logFile, "w")
+                currentTime = time.asctime()
+                self._logWrite("=== Logging started at {0}. ==="
+                        .format(currentTime))
             except IOError:
-                print "An error occured while trying to create the logfile."
+                print "An error occured while trying to open the logfile."
                 while True:
                     input_ = raw_input("Continue without logging? (y/n)\n>",)
                     if input_ not in ["y", "n"]:
@@ -142,12 +168,13 @@ class Core(object):
                         quit()
         else:
             self._logfile = None
+
             
 
     def _logWrite(self, data):
         '''Write to the log file.
 
-        Keyword Arguments:
+        Arguments:
             data -- the data to write into the file.
         '''
         # abort if the function was called without a file object present
@@ -174,6 +201,10 @@ class Core(object):
             self._irc.close()
             self._socketOpen = False
         if self._logging:
+            # replace spaces with underscore
+            currentTime = time.asctime()
+            self._logWrite("=== Logging stopped at {0}. ===\n"
+                    .format(currentTime))
             self._logfile.close()
 
 
@@ -181,7 +212,7 @@ class Core(object):
         '''Connect to a network with the given adress on the given port. Will do
         nothing when self._isConnected is True.
 
-        Keyword Arguments:
+        Arguments:
             host -- the network's adress, either a DNS entry or an IP
             port -- the port on which the connection will run
         '''
@@ -206,7 +237,7 @@ class Core(object):
     def send(self, data):
         '''Send raw data to the IRC server, adding the trailing CRNL.
 
-        Keyword Arguments:
+        Arguments:
             data -- a string describing a command to the server
         '''
         if not self._isConnected:
@@ -215,7 +246,12 @@ class Core(object):
         data = str(data)
 
         if self._logging:
-            self._logWrite("<-- " + data)
+            self._logWrite("<<< " + data)
+        
+        # Pretend Mode
+        if self._pretend:
+            print(data)
+            return
 
         # send data and add the trailing CRNL
         self._irc.send(data + "\r\n")
@@ -225,7 +261,7 @@ class Core(object):
         '''Listen to data from the server, PONG if the server PINGs.
         Return the received data.
 
-        Keyword Arguments:
+        Arguments:
             bufferlen -- Optional. Changes the size of the buffer. Defaults to 4096.
         '''
         if not self._isConnected:
@@ -239,7 +275,7 @@ class Core(object):
 
         # write to log if logging is active
         if self._logging:
-            self._logWrite("--> " + data)
+            self._logWrite(">>> " + data)
 
         # answer to pings
         if "PING" in data:
@@ -253,7 +289,7 @@ class Core(object):
     def quit(self, quitmsg = ""):
         '''Quit the server. Optionally send a quit message.
 
-        Keyword Arguments:
+        Arguments:
             quitmsg -- Optional. A quit message sent along the QUIT command.'''
         if quitmsg == "":
             self.send("QUIT")
@@ -266,7 +302,7 @@ class Core(object):
     def nickname(self, nick):
         '''Set or change the nickname.
 
-        Keyword Arguments:
+        Arguments:
             nick -- a valid nickname (no spaces, special characters restricted)
         '''
         self.send("NICK {0}".format(nick))
@@ -275,7 +311,7 @@ class Core(object):
     def username(self, user, real=None):
         '''Set the user- and realname.
 
-        Keyword Arguments:
+        Arguments:
             user -- a valid username (no spaces, special characters restricted)
             real -- Optional. A real name or description (spaces allowed).
                     Defaults to the value of the user argument.
@@ -288,7 +324,7 @@ class Core(object):
     def join(self, channels, keywords = ""):
         '''Try to join a number of channels, with optional keywords.
 
-        Keyword Arguments:
+        Arguments:
             channels -- the target channels, separated by ','
             keywords -- Optional. For channels with mode +k, separated by ','
         
@@ -324,7 +360,7 @@ class Core(object):
     def part(self, channels, partmsg = ""):
         '''Part one or more channels. Optionally send a part message.
 
-        Keyword Arguments:
+        Arguments:
             channel -- the target channels, separated by ','
             partmsg -- Optional. A part message sent along with the PART command
         '''
@@ -357,7 +393,7 @@ class Core(object):
     def say(self, target, msg):
         '''Send a message to a user or channel.
 
-        Keyword Arguments:
+        Arguments:
             target -- either another user or channel (with the usual hash)
             msg -- the message to send
         '''
@@ -368,7 +404,7 @@ class Core(object):
         ''''Do' an action in third person in a private message or channel.
             Has the same effect as '/me' in many clients.
 
-        Keyword Arguments:
+        Arguments:
             target - either a user or channel (with the usual hash)
             msg - an action to 'do'. 
         '''
@@ -378,7 +414,7 @@ class Core(object):
     def mode(self, target, mode, args = ""):
         '''Set the mode(s) of a channel or user, with optional arguments.
 
-        Keyword Arguments:
+        Arguments:
             target -- the target channel or user
             mode -- one or more valid mode characters
             args -- Optional. One or more arguments (eg usernames).
@@ -393,7 +429,7 @@ class Core(object):
         '''Kick a user from a channel. 
         Usually requires privileges in that channel.
 
-        Keyword Arguments:
+        Arguments:
             channel -- the target channel
             user -- the target user
             reason -- Optional. Specify a reason for the kick.
@@ -408,7 +444,7 @@ class Core(object):
         '''Mark yourself as away, specifying a message to be sent to others. If 
         message is omitted, the away status will be removed.
 
-        Keyword Arguments:
+        Arguments:
             message -- Message to be sent. Must be omitted to unmark
         '''
         if message == "":
@@ -420,7 +456,7 @@ class Core(object):
     def invite(self, user, channel):
         '''Invite a user to a channel.
 
-        Keyword Arguments;
+        Arguments;
             user -- The user to invite
             channel -- The channel to invite to
         '''
@@ -430,7 +466,7 @@ class Core(object):
     def notice(self, target, message):
         '''Send a notice to a user or channel.
 
-        Keyword Arguments:
+        Arguments:
             target -- Either a user or a channel (prefixed with the usual hash)
             message -- The message to send
         '''
@@ -440,7 +476,7 @@ class Core(object):
     def serverpassword(self, password):
         '''Sends the server password (if required).
 
-        Keyword Arguments:
+        Arguments:
             password -- The server password.
         '''
         self.send("PASS {0}".format(password))
@@ -461,7 +497,7 @@ class Core(object):
         '''Set the topic of a channel.
         Note: To query for the topic use gettopic().
 
-        Keyword Arguments:
+        Arguments:
             channel -- The channel to set the topic for
             topic -- The text to set as the topic
         '''
@@ -483,7 +519,7 @@ class Core(object):
         '''Requests information about the administrator of the local server, or,
         if target is specified, the server of the target (wildcards accepted).
 
-        Keyword Arguments:
+        Arguments:
             target -- Optional. Forward the request to the server of target
                 (can be a client or a server)
         '''
@@ -497,7 +533,7 @@ class Core(object):
         '''Requests information about the local server, or, if target is
         specified, the server of the target (wildcards accepted).
 
-        Keyword Arguments:
+        Arguments:
             target -- Optional. Forward the request to the server of target
                 (can be a client or a server)
         '''
@@ -511,7 +547,7 @@ class Core(object):
         '''Requests information about the online status of one or more 
         nicknames. The server returns all nicknames that are currently online.
 
-        Keyword Arguments:
+        Arguments:
             nicknames -- Either a space separated string of nicknames, or a 
                 python list of strings.
         '''
@@ -529,7 +565,7 @@ class Core(object):
         for a list of known servers matching servmask. If servmask is omitted,
         all known servers are returned.
 
-        Keyword Arguments:
+        Arguments:
             servmask -- Optional. Only servers matching servmask will be 
                 returned. Accepts wildcards.
             server -- Optional. Queries the specified server instead of the 
@@ -548,7 +584,7 @@ class Core(object):
         specified, lists only the status of those channels. If server is 
         specified, forwards the request to that server.
 
-        Keyword Arguments:
+        Arguments:
             channels - Optional. Requests only the listed channels, separated
                 by ','
             server -- Optional. Forwards the request to the specified server.
@@ -582,7 +618,7 @@ class Core(object):
         mask. If server is omitted, the local server will be queried, else the
         query will be forwarded to server.
 
-        Keyword Arguments:
+        Arguments:
             mask -- Optional. Narrows down the query, matching mask.
             server -- Optional. Forwards the query to server.
         '''
@@ -599,7 +635,7 @@ class Core(object):
         the client. If channels is specified, only lists for those channels are
         returned. If server is given, the request is forwarded to that server.
 
-        Keyword Arguments:
+        Arguments:
             channels - Optional. A list of channels separated by ','
             server -- Optional. Forwards the request to a server. Wildcards
                 accepted.
@@ -633,7 +669,7 @@ class Core(object):
         '''Lists services connected to the network and visible to the user, 
         matching mask if specified and of the matching type if specified.
 
-        Keyword Arguments:
+        Arguments:
             mask -- Optional. Narrows down the matches. Wildcards accepted.
             type_ -- Optional. Only services matching type_ will be returned.
         '''
@@ -649,7 +685,7 @@ class Core(object):
         '''Queries for certain server statistics. If note specified otherwise by
         the server argument, the local server is queried.
 
-        Keyword Arguments:
+        Arguments:
             query -- A letter describing the query. Mostly implementation 
                 dependant. The following SHOULD be supported by all servers:
                     l -- a list of the server's connections, their length and 
@@ -670,7 +706,7 @@ class Core(object):
         '''Queries the local time of the local server, or a remote server if 
         specified.
 
-        Keyword Arguments:
+        Arguments:
             server -- Optional. Forwards the request to a server. Wildcards
                 accepted.
         '''
@@ -684,7 +720,7 @@ class Core(object):
         '''Queries for the topic of a channel.
         Note: To set the topic of a channel use settopic().
 
-        Keyword Arguments:
+        Arguments:
             channel -- The channel for which the topic is queried
         '''
         self.send("TOPIC {0}".format(channel))
@@ -693,7 +729,7 @@ class Core(object):
     def trace(self, server = ""):
         '''Traces a route to the local or a remote server, if specified.
 
-        Keyword Arguments:
+        Arguments:
             server --  Optional. Forwards the request to a server. Wildcards
                 accepted.
         '''
@@ -706,7 +742,7 @@ class Core(object):
     def userhost(self, nicknames):
         '''Queries for host information about the given nicknames.
 
-        Keyword Arguments:
+        Arguments:
             nicknames -- A space separated string of nicknames or a python list
                 of strings.
         '''
@@ -722,7 +758,7 @@ class Core(object):
         '''Queries for a list of users logged into the server.
         Note: Disabled on most servers for security reasons.
 
-        Keyword Arguments:
+        Arguments:
             server --  Optional. Forwards the request to a server. Wildcards
                 accepted.
         '''
@@ -749,7 +785,7 @@ class Core(object):
         mask is omitted, all users who aren't invisible (mode +i). If oponly is
         True, only operators matching mask will be listed.
 
-        Keyword Arguments:
+        Arguments:
             mask -- Optional. Narrows down the query. Wildcards accepted.
             oponly -- Optional. List only Operators. Defaults to False.
         '''
@@ -764,7 +800,7 @@ class Core(object):
     def whois(self, nickname, server = ""):
         '''Queries for information about a specific user.
 
-        Keyword Arguments:
+        Arguments:
             nickname -- The nickname to query.
             server -- Optional. Forwards the request to a server. Wildcards
                 accepted.
@@ -778,7 +814,7 @@ class Core(object):
     def whowas(self, nickname, count = "", server = ""):
         '''Queries for information about a nickname that no longer exists.
 
-        Keyword Arguments:
+        Arguments:
             nickname -- The nickname to query
             count -- Optional. Limits the maximum amount of entries that are
                 returned, if any.
@@ -827,20 +863,19 @@ class OperCore(Core):
         squit(server, comment)
         wallops(message)
     '''
-    def __init__(self, logging = False):
-        '''Initializes the blackbox module. Pass on the logging parameter.
+    def __init__(self, **kwargs):
+        '''Initializes the blackbox module. Pass on the keyword
+        arguments. See Core for documentation.
 
-        Keyword Arguments:
-            logging -- Optional. Turns on logging. Defaults to False.
         '''
-        Core.__init__(self, logging)
+        Core.__init__(self, **kwargs)
         
 
     def servconnect(self, targetserv, port, remoteserv = ""):
         '''Requests the server to try to establish a new connection to another
         server. 
 
-        Keyword Arguments:
+        Arguments:
             targetserv -- Server to connect to
             port -- Port on which to connect
             remoteserv -- Optional. Pass on the CONNECT request to the remote
@@ -861,7 +896,7 @@ class OperCore(Core):
     def kill(self, user, reason):
         '''Terminates the connection of a client with the server network.
 
-        Keyword Arguments:
+        Arguments:
             user -- The target of the KILL command
             reason -- The reason for the KILL.
         '''
@@ -871,7 +906,7 @@ class OperCore(Core):
     def oper(self, username, password):
         '''Obtains Oper privileges.
 
-        Keyword Arguments:
+        Arguments:
             username -- The username for the Oper privileges
             password -- The password for the username
         '''
@@ -894,7 +929,7 @@ class OperCore(Core):
     def service(self, nick, distribution, info):
         '''Registers a new service.
 
-        Keyword Arguments:
+        Arguments:
             nick -- Name of the service
             distribution -- Visibility of the service
             info -- Description of the service
@@ -905,7 +940,7 @@ class OperCore(Core):
     def squit(self, server, comment):
         '''Disconnects a server link.
 
-        Keyword Arguments:
+        Arguments:
             server -- The target server (can be remote)
             comment -- A reason for this action.
         '''
