@@ -312,7 +312,7 @@ class Core(object):
                     channel = '#' + channel + ','
                     channels += channel
                 else:
-                    channels += channel
+                    channels += channel + ','
 
         # send join request to server
         if keywords == "":
@@ -345,7 +345,7 @@ class Core(object):
                     channel = '#' + channel + ','
                     channels += channel
                 else:
-                    channels += channel
+                    channels += channel + ','
 
         # no part message given
         if partmsg == "":
@@ -568,7 +568,7 @@ class Core(object):
                     channel = '#' + channel + ','
                     channels += channel
                 else:
-                    channels += channel
+                    channels += channel + ','
 
         # Send the request
         if server == "":
@@ -618,7 +618,7 @@ class Core(object):
                     channel = '#' + channel + ','
                     channels += channel
                 else:
-                    channels += channel
+                    channels += channel + ','
 
         # send the request
         if channels == "" and server == "":
