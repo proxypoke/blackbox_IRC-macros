@@ -24,6 +24,7 @@
 
 import socket
 import time
+import ssl
 
 class IRCError(Exception):
     '''Exception for connection related errors.
@@ -106,6 +107,7 @@ class Core(object):
         Keyword Arguments:
             logging -- Turn on logging. Defaults to False.
             logfile -- Specify a logfile. Defaults to blackbox_log.txt
+            ssl -- Turn on ssl. Defaults to False.
             pretend -- This puts blackbox into Pretend Mode.
                             Pretend Mode will cause blackbox to
                             be able to "pretend" as if it has connected
@@ -118,7 +120,8 @@ class Core(object):
         keywords = [
                 "logging",
                 "logfile",
-                "pretent",
+                "ssl",
+                "pretend",
                 ]
         for keyword in keywords:
             if keyword not in kwargs:
@@ -126,6 +129,7 @@ class Core(object):
 
         self._logging = kwargs['logging']
         self._logFile = kwargs['logfile']
+        self._ssl = kwargs["ssl"]
         self._pretend = kwargs['pretend']
 
         if not self._logFile:
@@ -134,6 +138,8 @@ class Core(object):
         # create the socket
         self._irc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self._socketOpen = True
+        if self._ssl:
+            self._irc = ssl.wrap_socket(self._irc)
 
         # Pretend Mode
         if self._pretend:
