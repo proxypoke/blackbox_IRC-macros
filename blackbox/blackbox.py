@@ -177,6 +177,18 @@ class IRC(blackbox_core.Core):
         self.mode(channel, "-b", mask)
 
 
+    def kickban(self, channel, nick, reason = ""):
+        '''Sets a ban on a user, then kicks them from the channel.
+
+        Arguments:
+            channel -- The channel from which to kickban.
+            nick -- The user to kickban.
+            reason -- Optional. A reason for the kickban.
+        '''
+        self.ban(channel, nick)
+        self.kick(channel, nick, reason)
+
+
 
 
 
