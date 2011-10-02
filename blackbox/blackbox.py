@@ -42,7 +42,98 @@ class IRC(blackbox_core.Core):
         blackbox_core.Core.__init__(self, **kwargs)
 
 
-    
+    def voice(self, channel, user):
+        '''Give voice to someone on a channel.
+
+        Arguments:
+            channel -- The channel on which to set the mode.
+            user -- The targeted user.
+        '''
+        self.mode(channel, "+v", user)
+
+    def devoice(self, channel, user):
+        '''Remove voice from someone on a channel.
+
+        Arguments:
+            channel -- The channel on which to set the mode.
+            user -- The targeted user.
+        '''
+        self.mode(channel, "-v", user)
+
+    def hop(self, channel, user):
+        '''Give half operator status to someone on a channel.
+
+        Arguments:
+            channel -- The channel on which to set the mode.
+            user -- The targeted user.
+        '''
+        self.mode(channel, "+h", user)
+
+    def dehop(self, channel, user):
+        '''Remove half operator status from someone on a channel.
+
+        Arguments:
+            channel -- The channel on which to set the mode.
+            user -- The targeted user.
+        '''
+        self.mode(channel, "-h", user)
+
+    def op(self, channel, user):
+        '''Give operator status to someone on a channel.
+
+        Arguments:
+            channel -- The channel on which to set the mode.
+            user -- The targeted user.
+        '''
+        self.mode(channel, "+o", user)
+
+    def deop(self, channel, user):
+        '''Remove operator status from someone on a channel.
+
+        Arguments:
+            channel -- The channel on which to set the mode.
+            user -- The targeted user.
+        '''
+        self.mode(channel, "-o", user)
+
+    def protect(self, channel, user):
+        '''Give protected status to someone on a channel.
+
+        Arguments:
+            channel -- The channel on which to set the mode.
+            user -- The targeted user.
+        '''
+        self.mode(channel, "+a", user)
+
+    def deprotect(self, channel, user):
+        '''Remove protected status from someone on a channel.
+
+        Arguments:
+            channel -- The channel on which to set the mode.
+            user -- The targeted user.
+        '''
+        self.mode(channel, "-a", user)
+
+    def owner(self, channel, user):
+        '''Give owner status to someone on a channel.
+
+        Arguments:
+            channel -- The channel on which to set the mode.
+            user -- The targeted user.
+        '''
+        self.mode(channel, "+q", user)
+
+    def deowner(self, channel, user):
+        '''Remove owner status from someone on a channel.
+
+        Arguments:
+            channel -- The channel on which to set the mode.
+            user -- The targeted user.
+        '''
+        self.mode(channel, "-q", user)
+
+
+
 
 
 ###########################

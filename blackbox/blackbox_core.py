@@ -64,6 +64,7 @@ class Core(object):
         connect(host, port)
         send(data)
         recv([bufferlen])
+        isConnected()
 
     Methods implementing RFC commands defined in this class:
         quit([quitmsg])
@@ -291,6 +292,15 @@ class Core(object):
         # save to internal storage and return received data
         self.data = data
         return data
+
+
+    def isConnected(self):
+        '''Checks if blackbox is connected.
+
+        Returns:
+            True if connected, False otherwise.
+        '''
+        return bool(self._isConnected)
 
 
     def quit(self, quitmsg = ""):
