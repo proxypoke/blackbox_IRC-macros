@@ -211,6 +211,7 @@ class Core(object):
             currentTime = time.asctime()
             self._logWrite("=== Logging stopped at {0}. ===\n"
                     .format(currentTime))
+            self._logging = False
             self._logfile.close()
 
 
