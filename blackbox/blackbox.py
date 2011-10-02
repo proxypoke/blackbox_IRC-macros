@@ -42,95 +42,139 @@ class IRC(blackbox_core.Core):
         blackbox_core.Core.__init__(self, **kwargs)
 
 
-    def voice(self, channel, user):
-        '''Give voice to someone on a channel.
+    def voice(self, channel, nick):
+        '''Gives voice to someone on a channel.
 
         Arguments:
             channel -- The channel on which to set the mode.
-            user -- The targeted user.
+            nick -- The targeted user.
         '''
-        self.mode(channel, "+v", user)
+        self.mode(channel, "+v", nick)
 
-    def devoice(self, channel, user):
-        '''Remove voice from someone on a channel.
+    def devoice(self, channel, nick):
+        '''Removes voice from someone on a channel.
 
         Arguments:
             channel -- The channel on which to set the mode.
-            user -- The targeted user.
+            nick -- The targeted user.
         '''
-        self.mode(channel, "-v", user)
+        self.mode(channel, "-v", nick)
 
-    def hop(self, channel, user):
-        '''Give half operator status to someone on a channel.
+    def hop(self, channel, nick):
+        '''Gives half operator status to someone on a channel.
 
         Arguments:
             channel -- The channel on which to set the mode.
-            user -- The targeted user.
+            nick -- The targeted user.
         '''
-        self.mode(channel, "+h", user)
+        self.mode(channel, "+h", nick)
 
-    def dehop(self, channel, user):
-        '''Remove half operator status from someone on a channel.
+    def dehop(self, channel, nick):
+        '''Removes half operator status from someone on a channel.
 
         Arguments:
             channel -- The channel on which to set the mode.
-            user -- The targeted user.
+            nick -- The targeted user.
         '''
-        self.mode(channel, "-h", user)
+        self.mode(channel, "-h", nick)
 
-    def op(self, channel, user):
-        '''Give operator status to someone on a channel.
+    def op(self, channel, nick):
+        '''Gives operator status to someone on a channel.
 
         Arguments:
             channel -- The channel on which to set the mode.
-            user -- The targeted user.
+            nick -- The targeted user.
         '''
-        self.mode(channel, "+o", user)
+        self.mode(channel, "+o", nick)
 
-    def deop(self, channel, user):
-        '''Remove operator status from someone on a channel.
+    def deop(self, channel, nick):
+        '''Removes operator status from someone on a channel.
 
         Arguments:
             channel -- The channel on which to set the mode.
-            user -- The targeted user.
+            nick -- The targeted user.
         '''
-        self.mode(channel, "-o", user)
+        self.mode(channel, "-o", nick)
 
-    def protect(self, channel, user):
-        '''Give protected status to someone on a channel.
+    def protect(self, channel, nick):
+        '''Gives protected status to someone on a channel.
 
         Arguments:
             channel -- The channel on which to set the mode.
-            user -- The targeted user.
+            nick -- The targeted user.
         '''
-        self.mode(channel, "+a", user)
+        self.mode(channel, "+a", nick)
 
-    def deprotect(self, channel, user):
-        '''Remove protected status from someone on a channel.
+    def deprotect(self, channel, nick):
+        '''Removes protected status from someone on a channel.
 
         Arguments:
             channel -- The channel on which to set the mode.
-            user -- The targeted user.
+            nick -- The targeted user.
         '''
-        self.mode(channel, "-a", user)
+        self.mode(channel, "-a", nick)
 
-    def owner(self, channel, user):
-        '''Give owner status to someone on a channel.
+    def owner(self, channel, nick):
+        '''Gives owner status to someone on a channel.
 
         Arguments:
             channel -- The channel on which to set the mode.
-            user -- The targeted user.
+            nick -- The targeted user.
         '''
-        self.mode(channel, "+q", user)
+        self.mode(channel, "+q", nick)
 
-    def deowner(self, channel, user):
-        '''Remove owner status from someone on a channel.
+    def deowner(self, channel, nick):
+        '''Removes owner status from someone on a channel.
 
         Arguments:
             channel -- The channel on which to set the mode.
-            user -- The targeted user.
+            nick -- The targeted user.
         '''
-        self.mode(channel, "-q", user)
+        self.mode(channel, "-q", nick)
+
+    def ban(self, channel, nick):
+        '''Sets a ban on a channel against a nickname.
+
+        This method will set a ban on nick!*@*.
+        For more precise bans, use banByMask().
+
+        Arguments:
+            channel -- The channel on which to set the ban.
+            nick -- The user to ban.
+        '''
+        self.mode(channel, "+b", nick + "!*@*")
+
+    def unban(self, channel, nick):
+        '''Removes a ban on a channel against a nickname.
+
+        This method will unset bans on nick!*@*.
+        For more precise unbanning, use unbanByMask().
+
+        Arguments:
+            channel -- The channel on which to remove the ban.
+            nick -- The user to unban.
+        '''
+        self.mode(channel, "-b", nick + "!*@*")
+
+    def banByMask(self, channel, mask):
+        '''Sets a ban on a channel against a mask in the form of
+        'nick!user@host'. Wildcards accepted.
+
+        Arguments:
+            channel -- The channel on which to set the ban.
+            mask -- The mask to ban.
+        '''
+        self.mode(channel, "+b", mask)
+
+    def unbanByMask(self, channel, mask):
+        '''Removes a ban on a channel against a mask in the form of
+        'nick!user@host'. Wildcards accepted.
+
+        Arguments:
+            channel -- The channel on which to remove the ban.
+            mask -- The mask to unban.
+        '''
+        self.mode(channel, "-b", mask)
 
 
 
