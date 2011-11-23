@@ -176,7 +176,6 @@ class Core(object):
         else:
             self._logfile = None
 
-            
 
     def _logWrite(self, data):
         '''Write to the log file.
@@ -200,6 +199,18 @@ class Core(object):
         # write to log
         self._logfile.write("{0} {1}\n".format(currentTime, data))
 
+    def _addHashes(self, split):
+        '''
+        '''
+        channels = ""
+        for channel in split:
+            if channel != "":
+                if channel[0] != '#':
+                    channel = '#' + channel + ','
+                    channels += channel
+                else:
+                    channels += channel + ','
+        return channels
 
     def close(self):
         '''Close the socket, set socketOpen to False. 
@@ -358,14 +369,7 @@ class Core(object):
         split = channels.split(',')
 
         # add the hash for every channel if it is missing
-        channels = ""
-        for channel in split:
-            if channel != "":
-                if channel[0] != '#':
-                    channel = '#' + channel + ','
-                    channels += channel
-                else:
-                    channels += channel + ','
+        channels = self._addHashes(split)
 
         # send join request to server
         if keywords == "":
@@ -391,14 +395,7 @@ class Core(object):
         split = channels.split(',')
 
         # add the hash for every channel if it is missing
-        channels = ""
-        for channel in split:
-            if channel != "":
-                if channel[0] != '#':
-                    channel = '#' + channel + ','
-                    channels += channel
-                else:
-                    channels += channel + ','
+        channels = self._addHashes(split)
 
         # no part message given
         if partmsg == "":
@@ -614,14 +611,7 @@ class Core(object):
         split = channels.split(',')
 
         # add the hash for every channel if it is missing
-        channels = ""
-        for channel in split:
-            if channel != "":
-                if channel[0] != '#':
-                    channel = '#' + channel + ','
-                    channels += channel
-                else:
-                    channels += channel + ','
+        channels = self._addHashes(split)
 
         # Send the request
         if server == "":
@@ -664,14 +654,7 @@ class Core(object):
         split = channels.split(',')
 
         # add the hash for every channel if it is missing
-        channels = ""
-        for channel in split:
-            if channel != "":
-                if channel[0] != '#':
-                    channel = '#' + channel + ','
-                    channels += channel
-                else:
-                    channels += channel + ','
+        channels = self._addHashes(split)
 
         # send the request
         if channels == "" and server == "":
