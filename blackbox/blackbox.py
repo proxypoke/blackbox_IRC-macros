@@ -1,15 +1,16 @@
 # blackbox IRC macros
-
+#
 # (c) 2011 Proxy of KOS-MOS Productions
 # Offical IRC channel: irc://irc.datnode.net/KOS-MOS
 # Offical repository on github: https://github.com/proxypoke/blackbox_IRC-macros
-
+#
 # This program, hereafter called "blackbox", 
 # is Free Software under the terms of the 
 # GNU General Public license, which can be found at 
 # http://www.gnu.org/copyleft/gpl.html.
 
-import blackbox_core
+from . import blackbox_core
+from .blackbox_core import IRCError
 
 class IRC(blackbox_core.Core):
     '''A package of macros simplifying communication with an IRC server,

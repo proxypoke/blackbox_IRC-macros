@@ -1,30 +1,26 @@
 # blackbox IRC macros
-
+#
 # (c) 2011 Proxy of KOS-MOS Productions
 # Offical IRC channel: irc://irc.datnode.net/KOS-MOS
 # Offical repository on github: https://github.com/proxypoke/blackbox_IRC-macros
-
+#
 # This program, hereafter called "blackbox", 
 # is Free Software under the terms of the 
 # GNU General Public license, which can be found at 
 # http://www.gnu.org/copyleft/gpl.html.
+
+from __future__ import unicode_literals
+from __future__ import print_function
 
 import socket
 import time
 import ssl
 
 class IRCError(Exception):
-    '''Exception for connection related errors.
-
-    Attributes:
-        msg -- a message describing the error.
+    '''Exception for connection related errors. Really just a wrapper
+    for the standard Exception.
     '''
-
-    def __init__(self, msg):
-        self.msg = msg
-
-    def __str__(self):
-        return repr(self.msg)
+    pass
 
 
 class Core(object):
@@ -35,67 +31,17 @@ class Core(object):
     Core class: This class implements all basic server commands as defined
     in the IRC RFC. It does not contain commands only usable by IRC
     Operators, these are contained in the OperCore class.
-
-    Attributes defined in this class:
-        _irc -- the socket.socket object
-        _socketOpen -- indicates the state of the socket (True = open)
-        _isConnected -- indicates the state of the connection (True = connected)
-        _logging -- indicates whether a log is maintained or not (True = active)
-        _logfile -- the file to which the log is written
-        data -- stores the data received from the last call of recv()
-
-    Regular Methods defined in this class:
-        __init__([logging])
-        _logWrite(data)
-        close()
-        connect(host, port)
-        send(data)
-        recv([bufferlen])
-        isConnected()
-
-    Methods implementing RFC commands defined in this class:
-        quit([quitmsg])
-        nickname(nick)
-        username(user, real)
-        join(channel [, keyword])
-        part(channel [,partmsg])
-        say(target, msg)
-        action(target, msg)
-        mode(channel, mode [, users])
-        kick(channel, user [, reason])
-        away(message)
-        invite(nickname, channel)
-        notice(target, message)
-        serverpassword(password)
-        settopic(channel, topic)
-        admin([server])
-        info([server]
-        ison(nicknames)
-        links([servmask [, server]])
-        chanlist([channels [, server]])
-        lusers([mask [, server]])
-        names([channels [, server]])
-        servlist([mask [, type_]])
-        stats(query [, server])
-        time([server])
-        gettopic(channel)
-        trace([target])
-        userhost(nicknames)
-        users([server])
-        version([server])
-        who(mask [, oponly])
-        whois(nickname [, server])
-        whowas(nickname [, count [, server]])
     '''
 
     def __init__(self, **kwargs):
         '''Initialize the object, create the socket, set the attributes to
-        their default values. Create a log file if logging is set to True.
+        their default values. 
 
         Keyword Arguments:
             logging -- Turn on logging. Defaults to False.
             logfile -- Specify a logfile. Defaults to blackbox_log.txt
             ssl -- Turn on ssl. Defaults to False.
+            encoding -- Specify the encoding. Defaults to utf-8.
             pretend -- This puts blackbox into Pretend Mode.
                             Pretend Mode will cause blackbox to
                             be able to "pretend" as if it has connected
@@ -105,29 +51,13 @@ class Core(object):
                             purposes.
                             Defaults to False.
         '''
-        keywords = [
-                "logging",
-                "logfile",
-                "ssl",
-                "pretend",
-                ]
-        for keyword in keywords:
-            if keyword not in kwargs:
-                kwargs[keyword] = False
-
-        self._logging = kwargs['logging']
-        self._logFile = kwargs['logfile']
-        self._ssl = kwargs["ssl"]
-        self._pretend = kwargs['pretend']
-
-        if not self._logFile:
-            self._logFile = "blackbox_log.txt"
-
-        # create the socket
-        self._irc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self._socketOpen = True
-        if self._ssl:
-            self._irc = ssl.wrap_socket(self._irc)
+        self._logging = kwargs.get("logging", False)
+        self._logfile = kwargs.get("logfile", "blackbox_log.txt")
+        self._ssl = kwargs.get("ssl", False)
+        self._encoding = kwargs.get("encoding", "utf-8")
+        self._pretend = kwargs.get("pretend", False)
+        
+        self._socketOpen = False
 
         # Pretend Mode
         if self._pretend:
@@ -146,22 +76,19 @@ class Core(object):
                 self._logWrite("=== Logging started at {0}. ==="
                         .format(currentTime))
             except IOError:
-                print "An error occured while trying to open the logfile."
-                while True:
-                    input_ = raw_input("Continue without logging? (y/n)\n>",)
-                    if input_ not in ["y", "n"]:
-                        print "Invalid input. Please enter 'y' or 'n'."
-                        continue
-                    
-                    elif input_ == "y":
-                        self._logging = False
-                        self._logfile = None
-                        break
-                    else:
-                        print "Aborting..."
-                        quit()
+                raise IOError("Can't open logfile at {0}."
+                        .format(self_logfile))
         else:
             self._logfile = None
+
+
+    def _createSocket(self):
+        '''(Re)create the internal socket.
+        '''
+        self._irc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self._socketOpen = True
+        if self._ssl:
+            self._irc = ssl.wrap_socket(self._irc)
 
 
     def _logWrite(self, data):
@@ -186,6 +113,7 @@ class Core(object):
         # write to log
         self._logfile.write("{0} {1}\n".format(currentTime, data))
 
+
     def _addHashes(self, split):
         '''
         '''
@@ -198,6 +126,7 @@ class Core(object):
                 else:
                     channels += channel + ','
         return channels
+
 
     def close(self):
         '''Close the socket, set socketOpen to False. 
@@ -215,18 +144,16 @@ class Core(object):
 
 
     def connect(self, host, port):
-        '''Connect to a network with the given adress on the given port. Will do
-        nothing when self._isConnected is True.
+        '''Connect to a network with the given adress on the given port.
 
         Arguments:
             host -- the network's adress, either a DNS entry or an IP
             port -- the port on which the connection will run
         '''
         if not self._socketOpen:
-            raise socket.error("The socket is closed.")
-        # do nothing if a connection is already established
+            self._createSocket()
         if self._isConnected:
-            return
+            raise IRCError("Already connected.")
 
         # convert types and abort on error
         host = str(host)
@@ -259,8 +186,9 @@ class Core(object):
             print(data)
             return
 
-        # send data and add the trailing CRNL
-        self._irc.send(data + "\r\n")
+        # Add the trailing CRLF and send the encoded data
+        data += "\r\n"
+        self._irc.send(data.encode(self._encoding))
 
 
     def recv(self, bufferlen = 4096):
@@ -273,11 +201,16 @@ class Core(object):
         if not self._isConnected:
             raise IRCError("No active connection.")
 
-        data = self._irc.recv(bufferlen)
+        data = self._irc.recv(bufferlen).decode(self._encoding)
+        
+        # empty strings indicate a lost connection or some other problem
+        # with the socket.
+        if data == '':
+            raise IRCError("Connection lost.")
 
         # strip \r\n
-        data = data.strip("\r")
         data = data.strip("\n")
+        data = data.strip("\r")
 
         # write to log if logging is active
         if self._logging:
