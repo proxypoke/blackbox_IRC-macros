@@ -52,7 +52,7 @@ class Core(object):
                             Defaults to False.
         '''
         self._logging = kwargs.get("logging", False)
-        self._logfile = kwargs.get("logfile", "blackbox_log.txt")
+        self._logFile = kwargs.get("logfile", "blackbox_log.txt")
         self._ssl = kwargs.get("ssl", False)
         self._encoding = kwargs.get("encoding", "utf-8")
         self._pretend = kwargs.get("pretend", False)
