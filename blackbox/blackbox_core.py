@@ -188,7 +188,7 @@ class Core(object):
 
         # Add the trailing CRLF and send the encoded data
         data += "\r\n"
-        self._irc.send(data.encode(self._encoding))
+        self._irc.send(data.encode(self._encoding, 'replace'))
 
 
     def recv(self, bufferlen = 4096):
@@ -201,7 +201,7 @@ class Core(object):
         if not self._isConnected:
             raise IRCError("No active connection.")
 
-        data = self._irc.recv(bufferlen).decode(self._encoding)
+        data = self._irc.recv(bufferlen).decode(self._encoding, 'replace')
         
         # empty strings indicate a lost connection or some other problem
         # with the socket.
