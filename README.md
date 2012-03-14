@@ -9,9 +9,9 @@ It is mainly meant to be used in bots, but can of course be used for any other a
 
 Copyright (c) Proxy of KOS-MOS Productions 
 
-Official IRC channel: [irc://irc.datnode.net/KOS-MOS](irc://irc.datnode.net/KOS-MOS)
+Official IRC channel: [irc://irc.datnode.net/KOS-MOS][irc]
 
-blackbox is Free Software under the terms of the [GNU General Public License v3](http://www.gnu.org/licenses/gpl.html).
+blackbox is Free Software under the terms of the [GNU General Public License v3][gpl].
 
 This means, in short:
 You have the freedom to use blackbox for any purpose, as well the freedom to change and share it (including any changes you made) with or without compensation.
@@ -19,12 +19,18 @@ You may not restrict these freedoms for any version of this software including d
 
 ## Installation
 
-Currently there is but one way to install blackbox:
-download the source and run setup.py with the 'install' parameter (you might need adminstrative privileges).
+There are multiple ways to install blackbox:
 
+1. blackbox has a [PyPI entry][pypi], so you can simply install it using [easy_install][] or [pip][] (this is the recommended way):
 
-A PyPI entry for blackbox is in the works.
-Once that is done, you will be able to use [easy\_install](http://peak.telecommunity.com/DevCenter/EasyInstall) or [pip](http://pypi.python.org/pypi/pip) to install blackbox.
+		pip install blackbox
+		easy_install blackbox
+
+2. Download the source, and manually install it:
+
+		python setup.py install
+
+3. Download the source and place the package where you want to use it.
 
 ## Usage
 
@@ -57,3 +63,9 @@ blackbox is mainly tested on UnrealIRCd, which uses '\\r\\n', so please report a
 
 For further insight into blackbox, use help(), all its methods are extensively documented.
 Also, many methods are very similar to slash-commands from popular IRC clients such as XChat.
+
+[irc]: irc://irc.datnode.net/KOS-MOS
+[gpl]: http://www.gnu.org/licenses/gpl.html
+[pypi]: http://pypi.python.org/pypi/blackbox/
+[easy_install]: http://peak.telecommunity.com/DevCenter/EasyInstall 
+[pip]: http://pypi.python.org/pypi/pip
