@@ -1,7 +1,7 @@
 # blackbox IRC macros
 
-# (c) 2011 Proxy of KOS-MOS Productions
-# Offical IRC channel: irc://irc.datnode.net/KOS-MOS
+# (c) slowpoke (Proxy) < proxypoke at lavabit dot com >
+# Offical IRC channel: irc://irc.datnode.net/hacking
 # Offical repository on github: https://github.com/proxypoke/blackbox_IRC-macros
 
 # This program, hereafter called 'blackbox', 
@@ -12,7 +12,7 @@
 from distutils.core import setup
 
 setup   ( name = 'blackbox'
-        , version = '0.5.1'
+        , version = '0.5.2'
         , author = 'slowpoke (Proxy)'
         , author_email = 'proxypoke@lavabit.com'
         , url = 'https://github.com/proxypoke/blackbox_IRC-macros'
