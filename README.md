@@ -7,9 +7,9 @@ It is mainly meant to be used in bots, but can of course be used for any other a
 
 ## License
 
-Copyright (c) Proxy of KOS-MOS Productions 
+Copyright (c) slowpoke (Proxy) < proxypoke at lavabit dot com>
 
-Official IRC channel: [irc://irc.datnode.net/KOS-MOS][irc]
+Official IRC channel: [#hacking on DatNode][irc]
 
 blackbox is Free Software under the terms of the [GNU General Public License v3][gpl].
 
@@ -64,7 +64,7 @@ blackbox is mainly tested on UnrealIRCd, which uses '\\r\\n', so please report a
 For further insight into blackbox, use help(), all its methods are extensively documented.
 Also, many methods are very similar to slash-commands from popular IRC clients such as XChat.
 
-[irc]: irc://irc.datnode.net/KOS-MOS
+[irc]: irc://irc.datnode.net/hacking
 [gpl]: http://www.gnu.org/licenses/gpl.html
 [pypi]: http://pypi.python.org/pypi/blackbox/
 [easy_install]: http://peak.telecommunity.com/DevCenter/EasyInstall 
