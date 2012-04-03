@@ -15,7 +15,7 @@ import sys
 
 class Event(object):
     '''Represents a generic message from the IRC server. It has methods
-    that work on ever message an IRC server could return.
+    that work on every message an IRC server could return.
     The Parser subclasses this class on the fly to create events named
     after their command.
     '''
