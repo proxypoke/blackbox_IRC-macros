@@ -9,10 +9,10 @@
 # GNU General Public license, which can be found at 
 # http://www.gnu.org/copyleft/gpl.html.
 
-from . import blackbox_core
-from .blackbox_core import IRCError
+from . import core
+from .core import IRCError
 
-class IRC(blackbox_core.Core):
+class IRC(core.Core):
     '''A package of macros simplifying communication with an IRC server,
     encapsuling most of the commonly used low level functions to handy,
     callable functions.
@@ -27,7 +27,7 @@ class IRC(blackbox_core.Core):
         '''Initializes the blackbox module. Pass on the keyword
         arguments. For documentation see Core's __init__.
         '''
-        blackbox_core.Core.__init__(self, **kwargs)
+        core.Core.__init__(self, **kwargs)
 
 
     def voice(self, channel, nick):
@@ -188,7 +188,7 @@ class IRC(blackbox_core.Core):
 #       |_|               #
 ###########################
 
-class Oper(IRC, blackbox_core.OperCore):
+class Oper(IRC, core.OperCore):
     '''A package of macros simplifying communication with an IRC server,
     encapsuling most of the commonly used low level functions to handy,
     callable functions.
@@ -199,5 +199,5 @@ class Oper(IRC, blackbox_core.OperCore):
         arguments. For documentation see Core's __init__.
         '''
         IRC.__init__(self, logging)
-        blackbox_core.Core.__init__(self)
+        core.Core.__init__(self)
 

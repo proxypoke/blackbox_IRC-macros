@@ -12,9 +12,19 @@
 from __future__ import unicode_literals
 from __future__ import print_function
 
+import sys
+
+
 import socket
 import time
 import ssl
+
+if sys.version_info[0] == 3:
+    import queue
+else:
+    import Queue as queue
+
+
 
 class IRCError(Exception):
     '''Exception for connection related errors. Really just a wrapper
@@ -32,6 +42,18 @@ class Core(object):
     in the IRC RFC. It does not contain commands only usable by IRC
     Operators, these are contained in the OperCore class.
     '''
+    data = None
+
+    _logging = None
+    _logFile = None
+    _ssl = None
+    _encoding = None
+    _pretend = None
+    _socketOpen = None
+    _isConnected = None
+
+    _buffer = queue.Queue()
+
 
     def __init__(self, **kwargs):
         '''Initialize the object, create the socket, set the attributes to
@@ -59,14 +81,12 @@ class Core(object):
         
         self._socketOpen = False
 
+
         # Pretend Mode
         if self._pretend:
             self._isConnected = True
         else:
             self._isConnected = False
-
-        # storage for received data
-        self.data = None
 
         # create a dated log file if logging is turned on
         if self._logging:
@@ -80,7 +100,6 @@ class Core(object):
                         .format(self_logfile))
         else:
             self._logfile = None
-
 
     def _createSocket(self):
         '''(Re)create the internal socket.
@@ -193,7 +212,7 @@ class Core(object):
 
     def recv(self, bufferlen = 4096):
         '''Listen to data from the server, PONG if the server PINGs.
-        Return the received data.
+        Return the received data, one line at a time.
 
         Arguments:
             bufferlen -- Optional. Changes the size of the buffer. Defaults to 4096.
@@ -201,17 +220,53 @@ class Core(object):
         if not self._isConnected:
             raise IRCError("No active connection.")
 
-        data = self._irc.recv(bufferlen).decode(self._encoding, 'replace')
-        
-        # empty strings indicate a lost connection or some other problem
-        # with the socket.
-        if data == '':
-            raise IRCError("Connection lost.")
+        try:
+            # let's see if there is data in the buffer
+            data = self._buffer.get_nowait()
+            return self._recvHelper(data)
+        except queue.Empty:
+            pass # go on and try to receive data
 
-        # strip \r\n
-        data = data.strip("\n")
-        data = data.strip("\r")
+        tmpData = ''
+        while True:
+            data = self._irc.recv(bufferlen).decode(self._encoding, 'replace')
 
+            # empty strings indicate a lost connection or some other problem
+            # with the socket.
+            if data == '':
+                raise IRCError("Connection lost.")
+
+            # get half-finished lines, if any
+            data = tmpData + data
+            tmpData = ''
+
+            lines = data.split("\r\n")
+
+            if lines[-1] != '':
+                # oh no, an incomplete line!
+                # store it for next time
+               tmpData = lines.pop()
+            else:
+                # get rid of the empty string
+                lines.pop()
+
+            # put everything else in the buffer
+            for line in lines:
+                self._buffer.put(line)
+
+            if tmpData == '':
+                # we're not waiting for an incomplete line
+                # let's get the hell out of here
+                break
+
+
+        data = self._buffer.get()
+        return self._recvHelper(data)
+
+
+    def _recvHelper(self, data):
+        '''Helper function for recv().
+        '''
         # write to log if logging is active
         if self._logging:
             self._logWrite(">>> " + data)
@@ -225,10 +280,12 @@ class Core(object):
         return data
 
 
+
     def isConnected(self):
         '''Checks if blackbox is connected.
 
         Returns:
+
             True if connected, False otherwise.
         '''
         return bool(self._isConnected)

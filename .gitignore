@@ -2,3 +2,5 @@
 *.pyc
 # ignore vim swaps
 *.swp
+MANIFEST
+dist/
