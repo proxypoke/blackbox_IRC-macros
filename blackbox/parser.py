@@ -64,7 +64,7 @@ class Event(object):
             there is none.
         '''
         if '@' in self.prefix:
-            h = self.prefix.split('@')
+            h = self.prefix.split('@')[-1]
         else:
             h = ''
         return h
