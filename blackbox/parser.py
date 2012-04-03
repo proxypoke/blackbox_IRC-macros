@@ -14,7 +14,10 @@ import time
 import sys
 
 class Event(object):
-    '''
+    '''Represents a generic message from the IRC server. It has methods
+    that work on ever message an IRC server could return.
+    The Parser subclasses this class on the fly to create events named
+    after their command.
     '''
     def __init__(self, prefix, command, params):
         self.prefix = prefix
@@ -25,6 +28,10 @@ class Event(object):
     def origin(self):
         '''Returns the origin of the Event, which is either a server
         name, or a nick.
+
+        Returns:
+            A string representing the server name or nick, or an empty
+            string if there is no prefix.
         '''
         if '!' in self.prefix:
             o = self.prefix.split('!')[0]
@@ -35,7 +42,11 @@ class Event(object):
         return o
 
     def user(self):
-        '''Gets the user string of the origin, if any.
+        '''Gets the username of the origin, if any.
+
+        Returns:
+            A string representing the username, or an empty string if
+            there is none.
         '''
         if '!' in self.prefix:
             u = self.prefix.split('!')[-1]
@@ -47,6 +58,10 @@ class Event(object):
 
     def host(self):
         '''Get the host of the origin, if any.
+
+        Returns:
+            A string representing the hostname, or an empty string if
+            there is none.
         '''
         if '@' in self.prefix:
             h = self.prefix.split('@')
@@ -54,7 +69,9 @@ class Event(object):
             h = ''
         return h
 
-    def __repr__(self):
+    def __str__(self):
+        '''A formatted version of the message.
+        '''
         s = "{0} -- {1} from {2}: {3}"
         return s.format( time.asctime(time.gmtime(self.time))
                        , self.command
@@ -62,27 +79,50 @@ class Event(object):
                        , ' '.join(self.params)
                        )
 
+    def __repr__(self):
+        '''The raw representation of the message.'''
+        p = ' '.join(self.params)
+        msg = ' '.join([ self.prefix
+                       , self.command
+                       , p
+                       ])
+        return msg
+
 class NumericReply(Event):
-    '''
+    '''A special subclass of Event. It prevents the numerous numeric
+    replies to be turned into single events each.
     '''
     def __init__(self, *args):
         super(NumericReply, self).__init__(*args)
         self.number = self.command
 
 class Parser(object):
-    '''
+    '''Provides a very simple, but powerful, event-based parser for IRC
+    messages. It creates Event objects on the fly, named after their
+    command.
     '''
     _events = {}
     _numreplies = []
 
     def events(self):
+        '''Gets a list of all known events.
+        '''
         return list(self._events)
     
     def numreplies(self):
+        '''Get a list of all known numeric replies.
+        '''
         return sorted(self._numreplies)
 
     def parse(self, string):
-        '''
+        '''Parse a single IRC message string, and return an appropriate
+        Event object.
+
+        Arguments:
+            string -- A valid IRC message string.
+
+        Returns:
+            An event object.
         '''
         prefix = ''
         command = ''
@@ -100,6 +140,11 @@ class Parser(object):
         return self._generateEvent(prefix, command, params)
 
     def _parseParams(self, s):
+        '''Splits the parameters into a list.
+        Every item will be a single string without whitespace, unless a
+        colon is encountered. In that case, the last item will be a
+        string possibly containing whitespace.
+        '''
         params = []
         while len(s) != 0:
             if not s[0].startswith(':'):
@@ -110,6 +155,9 @@ class Parser(object):
         return params
 
     def _generateEvent(self, prefix, command, params):
+        '''Create an Event object, either using an already known Event,
+        or generate a new subclass on the fly.
+        '''
         if command.isdigit():
             if not command in self._numreplies:
                 self._numreplies.append(command)
@@ -123,6 +171,7 @@ class Parser(object):
             else:
                 if sys.version_info[0] < 3:
                     command = command.encode("utf-8")
+                # make a new subclass of Event, named like the command.
                 event = type( command
                             , (Event,)
                             , {}
