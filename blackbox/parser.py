@@ -9,65 +9,30 @@
 # GNU General Public license, which can be found at 
 # http://www.gnu.org/copyleft/gpl.html.
 
+'''blackbox.parser - a small, but complete IRC parser
+
+This module provides a parser for IRC messages, which generates Event objects.
+These can be queried for their origin and some other things, and further be
+used to implement hooks etc.
+'''
+
 from __future__ import unicode_literals
 import time
 import sys
 
 class Event(object):
+
     '''Represents a generic message from the IRC server. It has methods
     that work on every message an IRC server could return.
     The Parser subclasses this class on the fly to create events named
     after their command.
     '''
+
     def __init__(self, prefix, command, params):
         self.prefix = prefix
         self.command = command
         self.params = params
         self.time = time.time()
-
-    def origin(self):
-        '''Returns the origin of the Event, which is either a server
-        name, or a nick.
-
-        Returns:
-            A string representing the server name or nick, or an empty
-            string if there is no prefix.
-        '''
-        if '!' in self.prefix:
-            o = self.prefix.split('!')[0]
-        elif '@' in self.prefix:
-            o = self.prefix.split('@')[0]
-        else:
-            o = self.prefix
-        return o
-
-    def user(self):
-        '''Gets the username of the origin, if any.
-
-        Returns:
-            A string representing the username, or an empty string if
-            there is none.
-        '''
-        if '!' in self.prefix:
-            u = self.prefix.split('!')[-1]
-            if '@' in u:
-                u = u.split('@')[0]
-        else:
-            u = ''
-        return u
-
-    def host(self):
-        '''Get the host of the origin, if any.
-
-        Returns:
-            A string representing the hostname, or an empty string if
-            there is none.
-        '''
-        if '@' in self.prefix:
-            h = self.prefix.split('@')[-1]
-        else:
-            h = ''
-        return h
 
     def __str__(self):
         '''A formatted version of the message.
@@ -81,26 +46,77 @@ class Event(object):
 
     def __repr__(self):
         '''The raw representation of the message.'''
-        p = ' '.join(self.params)
-        msg = ' '.join([ self.prefix
-                       , self.command
-                       , p
-                       ])
+        params = ' '.join(self.params)
+        msg = ' '.join(
+                [ self.prefix
+                , self.command
+                , params
+                ])
         return msg
 
+    def origin(self):
+        '''Returns the origin of the Event, which is either a server
+        name, or a nick.
+
+        Returns:
+            A string representing the server name or nick, or an empty
+            string if there is no prefix.
+        '''
+        if '!' in self.prefix:
+            origin = self.prefix.split('!')[0]
+        elif '@' in self.prefix:
+            origin = self.prefix.split('@')[0]
+        else:
+            origin = self.prefix
+        return origin
+
+    def user(self):
+        '''Gets the username of the origin, if any.
+
+        Returns:
+            A string representing the username, or an empty string if
+            there is none.
+        '''
+        if '!' in self.prefix:
+            user = self.prefix.split('!')[-1]
+            if '@' in user:
+                user = user.split('@')[0]
+        else:
+            user = ''
+        return user
+
+    def host(self):
+        '''Get the host of the origin, if any.
+
+        Returns:
+            A string representing the hostname, or an empty string if
+            there is none.
+        '''
+        if '@' in self.prefix:
+            host = self.prefix.split('@')[-1]
+        else:
+            host = ''
+        return host
+
+
 class NumericReply(Event):
+    
     '''A special subclass of Event. It prevents the numerous numeric
     replies to be turned into single events each.
     '''
+
     def __init__(self, *args):
         super(NumericReply, self).__init__(*args)
         self.number = self.command
 
+
 class Parser(object):
+
     '''Provides a very simple, but powerful, event-based parser for IRC
     messages. It creates Event objects on the fly, named after their
     command.
     '''
+
     _events = {}
     _numreplies = []
 
@@ -141,6 +157,7 @@ class Parser(object):
 
     def _parseParams(self, s):
         '''Splits the parameters into a list.
+
         Every item will be a single string without whitespace, unless a
         colon is encountered. In that case, the last item will be a
         string possibly containing whitespace.
