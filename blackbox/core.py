@@ -9,6 +9,15 @@
 # GNU General Public license, which can be found at 
 # http://www.gnu.org/copyleft/gpl.html.
 
+'''blackbox.core - implements the basic IRC RFC commands as a usable base class
+
+This module provides the base class for the other blackbox classes, such as
+OperCore, IRC and Oper. It aims to fully implement the basic commands as
+described in RFC 1459 (the IRC specification). It doesn't implement slightly
+higher level commands, such as advanced channel privileges and other handy
+stuff, but is nonetheless fully useable by itself.
+'''
+
 from __future__ import unicode_literals
 from __future__ import print_function
 
@@ -34,26 +43,11 @@ class IRCError(Exception):
 
 
 class Core(object):
-    '''A package of macros simplifying communication with an IRC server,
-    encapsuling most of the commonly used low level functions to handy,
-    callable functions.
 
-    Core class: This class implements all basic server commands as defined
-    in the IRC RFC. It does not contain commands only usable by IRC
-    Operators, these are contained in the OperCore class.
+    '''This class implements all basic server commands as defined in the IRC
+    RFC. It does not contain commands only usable by IRC Operators, these are
+    contained in the OperCore class.
     '''
-    data = None
-
-    _logging = None
-    _logFile = None
-    _ssl = None
-    _encoding = None
-    _pretend = None
-    _socketOpen = None
-    _isConnected = None
-
-    _buffer = queue.Queue()
-
 
     def __init__(self, **kwargs):
         '''Initialize the object, create the socket, set the attributes to
@@ -79,8 +73,10 @@ class Core(object):
         self._encoding = kwargs.get("encoding", "utf-8")
         self._pretend = kwargs.get("pretend", False)
         
+        self._buffer = queue.Queue()
+        self.data = None
         self._socketOpen = False
-
+        self._irc = None
 
         # Pretend Mode
         if self._pretend:
@@ -97,7 +93,7 @@ class Core(object):
                         .format(currentTime))
             except IOError:
                 raise IOError("Can't open logfile at {0}."
-                        .format(self_logfile))
+                        .format(self._logfile))
         else:
             self._logfile = None
 
@@ -134,7 +130,7 @@ class Core(object):
 
 
     def _addHashes(self, split):
-        '''
+        '''Adds hashes to a list of channels.
         '''
         channels = ""
         for channel in split:
@@ -179,7 +175,8 @@ class Core(object):
         try:
             port = int(port)
         except ValueError:
-            raise TypeError("'port' parameter expects an integer. Got '{0}', which is {1}.".format(port, type(port)))
+            raise TypeError("'port' parameter expects an integer. Got '{0}', "
+                    "which is {1}.".format(port, type(port)))
 
         # initiate the connection
         self._irc.connect((host, port))
@@ -215,7 +212,8 @@ class Core(object):
         Return the received data, one line at a time.
 
         Arguments:
-            bufferlen -- Optional. Changes the size of the buffer. Defaults to 4096.
+            bufferlen -- Optional. Changes the size of the buffer.
+                            Defaults to 4096.
         '''
         if not self._isConnected:
             raise IRCError("No active connection.")
@@ -245,7 +243,7 @@ class Core(object):
             if lines[-1] != '':
                 # oh no, an incomplete line!
                 # store it for next time
-               tmpData = lines.pop()
+                tmpData = lines.pop()
             else:
                 # get rid of the empty string
                 lines.pop()
@@ -475,12 +473,16 @@ class Core(object):
 
     def squery(self, servicename = "", message = ""):
         '''Not implemented.
+
+        NOTE: Probably won't be implemented.
         '''
         return NotImplemented
 
 
     def summon(self, user = "", server = "", channel = ""):
         '''Not implemented.
+
+        NOTE: Probably won't be implemented.
         '''
         return NotImplemented
 
@@ -758,9 +760,9 @@ class Core(object):
 
 
     def who(self, mask = "", oponly = False):
-        '''Queries for a list of information about all users matching mask, or, if
-        mask is omitted, all users who aren't invisible (mode +i). If oponly is
-        True, only operators matching mask will be listed.
+        '''Queries for a list of information about all users matching mask,
+        or, if mask is omitted, all users who aren't invisible (mode +i). If
+        oponly is True, only operators matching mask will be listed.
 
         Arguments:
             mask -- Optional. Narrows down the query. Wildcards accepted.
@@ -806,26 +808,14 @@ class Core(object):
             self.send("WHOWAS {0} {1} {2}".format(nickname, count, server))
 
 
-
-
-###########################
-#   ___  _ __   ___ _ __  #
-#  / _ \| '_ \ / _ \ '__| #
-# | (_) | |_) |  __/ |    #
-#  \___/| .__/ \___|_|    #
-#       |_|               #
-###########################
-
+# =============================== [ OPER CORE ] ===============================
 
 class OperCore(Core):
-    '''A package of macros simplifying communication with an IRC server,
-    encapsuling most of the commonly used low level functions to handy,
-    callable functions.
 
-    OperCore class: This class implements all basic server commands as 
-    defined in the IRC RFC, including the commands reserved for IRC
-    Operators. If your application does not have or need these
-    privileges, consider using the Core class instead.
+    '''This class implements all basic server commands as defined in the IRC
+    RFC, including the commands reserved for IRC Operators. If your
+    application does not have or need these privileges, consider using the
+    Core class instead.  
 
     WARNING: ALL COMMANDS ARE UNTESTED. USE AT OWN RISK!
 
@@ -840,6 +830,7 @@ class OperCore(Core):
         squit(server, comment)
         wallops(message)
     '''
+
     def __init__(self, **kwargs):
         '''Initializes the blackbox module. Pass on the keyword
         arguments. See Core for documentation.
@@ -861,12 +852,12 @@ class OperCore(Core):
         if remoteserv == "":
             self.send("CONNECT {0} {1}".format(targetserv, port))
         else:
-            self.send("CONNECT {0} {1} {2}".format(targetserv, port, remoteserv))
+            self.send("CONNECT {0} {1} {2}".format(
+                targetserv, port, remoteserv))
 
 
     def die(self):
-        '''Shuts down the local server.
-        '''
+        '''Shuts down the local server.'''
         self.send("DIE")
 
 
@@ -891,15 +882,12 @@ class OperCore(Core):
 
 
     def rehash(self):
-        '''Forces the local server to reprocess its configuration file.
-        '''
+        '''Forces the local server to reprocess its configuration file.'''
         self.send("REHASH")
 
 
     def restart(self):
-        '''Forces the local server to restart itself.'''
-        '''
-        '''
+        '''Forces the local server to restart itself.  '''
         self.send("RESTART")
 
 
