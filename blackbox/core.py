@@ -44,9 +44,9 @@ class IRCError(Exception):
 
 class Core(object):
 
-    '''Core class: This class implements all basic server commands as defined
-    in the IRC RFC. It does not contain commands only usable by IRC Operators,
-    these are contained in the OperCore class.
+    '''This class implements all basic server commands as defined in the IRC
+    RFC. It does not contain commands only usable by IRC Operators, these are
+    contained in the OperCore class.
     '''
 
     def __init__(self, **kwargs):
@@ -812,10 +812,10 @@ class Core(object):
 
 class OperCore(Core):
 
-    '''OperCore class: This class implements all basic server commands as 
-    defined in the IRC RFC, including the commands reserved for IRC
-    Operators. If your application does not have or need these
-    privileges, consider using the Core class instead.
+    '''This class implements all basic server commands as defined in the IRC
+    RFC, including the commands reserved for IRC Operators. If your
+    application does not have or need these privileges, consider using the
+    Core class instead.  
 
     WARNING: ALL COMMANDS ARE UNTESTED. USE AT OWN RISK!
 
