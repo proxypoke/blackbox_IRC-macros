@@ -9,25 +9,26 @@
 # GNU General Public license, which can be found at 
 # http://www.gnu.org/copyleft/gpl.html.
 
+'''blackbox.blackbox - the main classes of blackbox
+
+This module provides the 
+'''
+
 from . import core
 from .core import IRCError
 
 class IRC(core.Core):
-    '''A package of macros simplifying communication with an IRC server,
-    encapsuling most of the commonly used low level functions to handy,
-    callable functions.
 
-    IRC class: This class implements composite methods and macros based
-    on the basic methods contained in the Core class. 
-    It does not contain commands only usable by IRC Operators, these are 
-    contained in the Oper class.
-
+    '''This class implements composite methods and macros based on the basic
+    methods contained in the Core class.  It does not contain commands only
+    usable by IRC Operators, these are contained in the Oper class.
     '''
+
     def __init__(self, **kwargs):
         '''Initializes the blackbox module. Pass on the keyword
         arguments. For documentation see Core's __init__.
         '''
-        core.Core.__init__(self, **kwargs)
+        core.Core.__init__(self, kwargs)
 
 
     def voice(self, channel, nick):
@@ -177,27 +178,18 @@ class IRC(core.Core):
         self.kick(channel, nick, reason)
 
 
-
-
-
-###########################
-#   ___  _ __   ___ _ __  #
-#  / _ \| '_ \ / _ \ '__| #
-# | (_) | |_) |  __/ |    #
-#  \___/| .__/ \___|_|    #
-#       |_|               #
-###########################
+# ================================= [ OPER ] ==================================
 
 class Oper(IRC, core.OperCore):
-    '''A package of macros simplifying communication with an IRC server,
-    encapsuling most of the commonly used low level functions to handy,
-    callable functions.
+
+    '''This methods defines composite methods meant for IRC operators, in
+    addition to everythig in IRC. There aren't any, at the moment, though.
     '''
-    
-    def __init__(self, logging = False):
+
+    def __init__(self, **kwargs):
         '''Initializes the blackbox module. Pass on the keyword
         arguments. For documentation see Core's __init__.
         '''
-        IRC.__init__(self, logging)
-        core.Core.__init__(self)
-
+        # don't call any kwargs on OperCore
+        core.OperCore.__init__(self)
+        IRC.__init__(self, kwargs)
