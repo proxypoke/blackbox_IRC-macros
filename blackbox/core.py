@@ -29,7 +29,8 @@ import time
 import ssl
 
 if sys.version_info[0] == 3:
-    import collections as queue
+    # XXX: pylint will complain about a broken import. Ignore it, it's correct.
+    import queue
 else:
     import Queue as queue
 
