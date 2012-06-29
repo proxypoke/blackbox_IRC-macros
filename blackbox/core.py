@@ -23,7 +23,7 @@ from __future__ import print_function
 
 import sys
 
-
+import logging
 import socket
 import time
 import ssl
@@ -55,8 +55,6 @@ class Core(object):
         their default values. 
 
         Keyword Arguments:
-            logging -- Turn on logging. Defaults to False.
-            logfile -- Specify a logfile. Defaults to blackbox_log.txt
             ssl -- Turn on ssl. Defaults to False.
             encoding -- Specify the encoding. Defaults to utf-8.
             pretend -- This puts blackbox into Pretend Mode.
@@ -68,8 +66,6 @@ class Core(object):
                             purposes.
                             Defaults to False.
         '''
-        self._logging = kwargs.get("logging", False)
-        self._logFile = kwargs.get("logfile", "blackbox_log.txt")
         self._ssl = kwargs.get("ssl", False)
         self._encoding = kwargs.get("encoding", "utf-8")
         self._pretend = kwargs.get("pretend", False)
@@ -79,24 +75,18 @@ class Core(object):
         self._socketOpen = False
         self._irc = None
 
+        # set up loggers
+        out = logging.getLogger("blackbox.out")
+        out.addHandler(logging.NullHandler())
+        _in = logging.getLogger("blackbox.in")
+        _in.addHandler(logging.NullHandler())
+
         # Pretend Mode
         if self._pretend:
             self._isConnected = True
         else:
             self._isConnected = False
 
-        # create a dated log file if logging is turned on
-        if self._logging:
-            try:
-                self._logfile = open(self._logFile, "w")
-                currentTime = time.asctime()
-                self._logWrite("=== Logging started at {0}. ==="
-                        .format(currentTime))
-            except IOError:
-                raise IOError("Can't open logfile at {0}."
-                        .format(self._logfile))
-        else:
-            self._logfile = None
 
     def _createSocket(self):
         '''(Re)create the internal socket.
@@ -105,7 +95,6 @@ class Core(object):
         self._socketOpen = True
         if self._ssl:
             self._irc = ssl.wrap_socket(self._irc)
-
 
     def _logWrite(self, data):
         '''Write to the log file.
@@ -150,14 +139,6 @@ class Core(object):
         if self._socketOpen:
             self._irc.close()
             self._socketOpen = False
-        if self._logging:
-            # replace spaces with underscore
-            currentTime = time.asctime()
-            self._logWrite("=== Logging stopped at {0}. ===\n"
-                    .format(currentTime))
-            self._logging = False
-            self._logfile.close()
-
 
     def connect(self, host, port):
         '''Connect to a network with the given adress on the given port.
@@ -195,8 +176,7 @@ class Core(object):
 
         data = str(data)
 
-        if self._logging:
-            self._logWrite("<<< " + data)
+        logging.getLogger("blackbox.out").info(data)
         
         # Pretend Mode
         if self._pretend:
@@ -266,9 +246,7 @@ class Core(object):
     def _recvHelper(self, data):
         '''Helper function for recv().
         '''
-        # write to log if logging is active
-        if self._logging:
-            self._logWrite(">>> " + data)
+        logging.getLogger("blackbox.in").info(data)
 
         # answer to pings
         if "PING" in data:
