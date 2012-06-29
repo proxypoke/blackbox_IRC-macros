@@ -29,7 +29,7 @@ import time
 import ssl
 
 if sys.version_info[0] == 3:
-    import queue
+    import collections as queue
 else:
     import Queue as queue
 
