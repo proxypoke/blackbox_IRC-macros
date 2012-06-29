@@ -28,7 +28,7 @@ class IRC(core.Core):
         '''Initializes the blackbox module. Pass on the keyword
         arguments. For documentation see Core's __init__.
         '''
-        core.Core.__init__(self, kwargs)
+        core.Core.__init__(self, **kwargs)
 
 
     def voice(self, channel, nick):
