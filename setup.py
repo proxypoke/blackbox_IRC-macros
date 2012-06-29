@@ -12,7 +12,7 @@
 from distutils.core import setup
 
 setup( name = 'blackbox'
-     , version = '0.5.4'
+     , version = '0.6'
      , author = 'slowpoke (Proxy)'
      , author_email = 'proxypoke@lavabit.com'
      , url = 'https://github.com/proxypoke/blackbox_IRC-macros'
