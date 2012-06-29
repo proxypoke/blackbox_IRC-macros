@@ -64,8 +64,17 @@ blackbox is mainly tested on UnrealIRCd, which uses '\\r\\n', so please report a
 For further insight into blackbox, use help(), all its methods are extensively documented.
 Also, many methods are very similar to slash-commands from popular IRC clients such as XChat.
 
+## Logging
+
+blackbox uses the [logging][] module from the stdlib. It uses two loggers,
+blackbox in and blackbox.out, both of which log to INFO. Per default, they log
+into a NullHandler, so if you want to enable logging, define a logger in your
+application and set the level to INFO. You can then further define how and
+where blackbox logs.
+
 [irc]: irc://irc.datnode.net/hacking
 [gpl]: http://www.gnu.org/licenses/gpl.html
 [pypi]: http://pypi.python.org/pypi/blackbox/
 [easy_install]: http://peak.telecommunity.com/DevCenter/EasyInstall 
 [pip]: http://pypi.python.org/pypi/pip
+[logging]: http://docs.python.org/library/logging.html
