@@ -426,21 +426,6 @@ class Core(object):
         self.send("PASS {0}".format(password))
 
 
-    def squery(self, servicename = "", message = ""):
-        '''Not implemented.
-
-        NOTE: Probably won't be implemented.
-        '''
-        return NotImplemented
-
-
-    def summon(self, user = "", server = "", channel = ""):
-        '''Not implemented.
-
-        NOTE: Probably won't be implemented.
-        '''
-        return NotImplemented
-
     def settopic(self, channel, topic):
         '''Set the topic of a channel.
         Note: To query for the topic use gettopic().
