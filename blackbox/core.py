@@ -25,7 +25,6 @@ import sys
 
 import logging
 import socket
-import time
 import ssl
 
 if sys.version_info[0] == 3:
@@ -95,29 +94,6 @@ class Core(object):
         self._socketOpen = True
         if self._ssl:
             self._irc = ssl.wrap_socket(self._irc)
-
-    def _logWrite(self, data):
-        '''Write to the log file.
-
-        Arguments:
-            data -- the data to write into the file.
-        '''
-        # abort if the function was called without a file object present
-        if self._logfile == None:
-            raise IOError("No log file present.")
-        # get current local time hh:mm:ss
-        getTime = time.localtime()[3:6]
-        currentTime = []
-        
-        # convert tuple contents into strings
-        for t in getTime:
-            currentTime.append(str(t))
-
-        currentTime = ":".join(currentTime)
-
-        # write to log
-        self._logfile.write("{0} {1}\n".format(currentTime, data))
-
 
     def _addHashes(self, split):
         '''Adds hashes to a list of channels.
