@@ -155,7 +155,8 @@ class Parser(object):
         
         return self._generateEvent(prefix, command, params)
 
-    def _parseParams(self, s):
+    @staticmethod
+    def _parseParams(s):
         '''Splits the parameters into a list.
 
         Every item will be a single string without whitespace, unless a

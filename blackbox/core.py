@@ -95,7 +95,8 @@ class Core(object):
         if self._ssl:
             self._irc = ssl.wrap_socket(self._irc)
 
-    def _addHashes(self, split):
+    @staticmethod
+    def _addHashes(split):
         '''Adds hashes to a list of channels.
         '''
         channels = ""

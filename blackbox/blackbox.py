@@ -15,6 +15,8 @@ This module provides the
 '''
 
 from . import core
+
+# NOTE: This is imported so it can be accessed as part of this module.
 from .core import IRCError
 
 class IRC(core.Core):
