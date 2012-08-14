@@ -194,4 +194,4 @@ class Oper(IRC, core.OperCore):
         '''
         # don't call any kwargs on OperCore
         core.OperCore.__init__(self)
-        IRC.__init__(self, kwargs)
+        IRC.__init__(self, **kwargs)
