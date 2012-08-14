@@ -251,12 +251,9 @@ class Core(object):
         '''Quit the server. Optionally send a quit message.
 
         Arguments:
-            quitmsg -- Optional. A quit message sent along the QUIT command.'''
-        if quitmsg == "":
-            self.send("QUIT")
-        else:
-            self.send("QUIT :{0}".format(quitmsg))
-
+            quitmsg -- Optional. A quit message sent along the QUIT command.
+        '''
+        self.send("QUIT :{0}".format(quitmsg))
         self._isConnected = False
 
 
@@ -310,10 +307,7 @@ class Core(object):
         channels = self._addHashes(split)
 
         # send join request to server
-        if keywords == "":
-            self.send("JOIN {0}".format(channels))
-        else:
-            self.send("JOIN {0} {1}".format(channels, keywords))
+        self.send("JOIN {0} {1}".format(channels, keywords))
 
 
     def part(self, channels, partmsg = ""):
@@ -335,11 +329,7 @@ class Core(object):
         # add the hash for every channel if it is missing
         channels = self._addHashes(split)
 
-        # no part message given
-        if partmsg == "":
-            self.send("PART {0}".format(channels))
-        else:
-            self.send("PART {0} :{1}".format(channels, partmsg))
+        self.send("PART {0} :{1}".format(channels, partmsg))
 
 
     def say(self, target, msg):
@@ -371,10 +361,7 @@ class Core(object):
             mode -- one or more valid mode characters
             args -- Optional. One or more arguments (eg usernames).
         '''
-        if args == "":
-            self.send("MODE {0} {1}".format(target, mode))
-        else:
-            self.send("MODE {0} {1} {2}".format(target, mode, args))
+        self.send("MODE {0} {1} {2}".format(target, mode, args))
 
 
     def kick(self, channel, user, reason = ""):
@@ -386,10 +373,7 @@ class Core(object):
             user -- the target user
             reason -- Optional. Specify a reason for the kick.
         '''
-        if reason == "":
-            self.send("KICK {0} {1}".format(channel, user))
-        else:
-            self.send("KICK {0} {1} :{2}".format(channel, user, reason))
+        self.send("KICK {0} {1} :{2}".format(channel, user, reason))
 
 
     def away(self, message = ""):
@@ -399,10 +383,7 @@ class Core(object):
         Arguments:
             message -- Message to be sent. Must be omitted to unmark
         '''
-        if message == "":
-            self.send("AWAY")
-        else:
-            self.send("AWAY {0}".format(message))
+        self.send("AWAY {0}".format(message))
 
 
     def invite(self, user, channel):
@@ -464,10 +445,7 @@ class Core(object):
             target -- Optional. Forward the request to the server of target
                 (can be a client or a server)
         '''
-        if target == "":
-            self.send("ADMIN")
-        else:
-            self.send("ADMIN {0}".format(target))
+        self.send("ADMIN {0}".format(target))
 
 
     def info(self, target = ""):
@@ -478,10 +456,7 @@ class Core(object):
             target -- Optional. Forward the request to the server of target
                 (can be a client or a server)
         '''
-        if target == "":
-            self.send("INFO")
-        else:
-            self.send("INFO {0}".format(target))
+        self.send("INFO {0}".format(target))
 
 
     def ison(self, nicknames):
@@ -512,12 +487,7 @@ class Core(object):
             server -- Optional. Queries the specified server instead of the 
                 local server.
         '''
-        if servmask == "" and server == "":
-            self.send("LINKS")
-        elif server == "":
-            self.send("LINKS {0}".format(servmask))
-        else:
-            self.send("LINKS {1} {0}".format(servmask, server))
+        self.send("LINKS {1} {0}".format(servmask, server))
 
 
     def chanlist(self, channels = "", server = ""):
@@ -540,11 +510,7 @@ class Core(object):
         # add the hash for every channel if it is missing
         channels = self._addHashes(split)
 
-        # Send the request
-        if server == "":
-            self.send("LIST {0}".format(channels))
-        else:
-            self.send("LIST {0} {1}".format(channels, server))
+        self.send("LIST {0} {1}".format(channels, server))
 
     def lusers(self, mask = "", server = ""):
         '''Gets statistics about the size of the IRC network. Without mask, the
@@ -556,12 +522,7 @@ class Core(object):
             mask -- Optional. Narrows down the query, matching mask.
             server -- Optional. Forwards the query to server.
         '''
-        if mask == "" and server == "":
-            self.send("LUSERS")
-        elif server == "":
-            self.send("LUSERS {0}".format(mask))
-        else:
-            self.send("LUSERS {0} {1}".format(mask, server))
+        self.send("LUSERS {0} {1}".format(mask, server))
 
 
     def names(self, channels = "", server = ""):
@@ -583,13 +544,7 @@ class Core(object):
         # add the hash for every channel if it is missing
         channels = self._addHashes(split)
 
-        # send the request
-        if channels == "" and server == "":
-            self.send("NAMES")
-        elif server == "":
-            self.send("NAMES {0}".format(channels))
-        else:
-            self.send("NAMES {0} {1}".format(channels, server))
+        self.send("NAMES {0} {1}".format(channels, server))
 
 
     def servlist(self, mask = "", type_ = ""):
@@ -600,12 +555,7 @@ class Core(object):
             mask -- Optional. Narrows down the matches. Wildcards accepted.
             type_ -- Optional. Only services matching type_ will be returned.
         '''
-        if mask == "" and type_ == "":
-            self.send("SERVLIST")
-        elif type_ == "":
-            self.send("SERVLIST {0}".format(mask))
-        else:
-            self.send("SERVLIST {0} {1}".format(mask, type_))
+        self.send("SERVLIST {0} {1}".format(mask, type_))
 
 
     def stats(self, query, server = ""):
@@ -623,10 +573,7 @@ class Core(object):
             server -- Optional. Forwards the request to a server. Wildcards
                 accepted.
         '''
-        if server == "":
-            self.send("STATS {0}".format(query))
-        else:
-            self.send("STATS {0} {1}".format(query, server))
+        self.send("STATS {0} {1}".format(query, server))
 
 
     def time(self, server = ""):
@@ -637,10 +584,7 @@ class Core(object):
             server -- Optional. Forwards the request to a server. Wildcards
                 accepted.
         '''
-        if server == "":
-            self.send("TIME")
-        else:
-            self.send("TIME {0}".format(server))
+        self.send("TIME {0}".format(server))
 
 
     def gettopic(self, channel):
@@ -660,10 +604,7 @@ class Core(object):
             server --  Optional. Forwards the request to a server. Wildcards
                 accepted.
         '''
-        if server == "":
-            self.send("TRACE")
-        else:
-            self.send("TRACE {0}".format(server))
+        self.send("TRACE {0}".format(server))
 
 
     def userhost(self, nicknames):
@@ -689,10 +630,7 @@ class Core(object):
             server --  Optional. Forwards the request to a server. Wildcards
                 accepted.
         '''
-        if server == "":
-            self.send("USERS")
-        else:
-            self.send("USERS {0}".format(server))
+        self.send("USERS {0}".format(server))
 
 
     def version(self, server = ""):
@@ -701,10 +639,7 @@ class Core(object):
             server --  Optional. Forwards the request to a server. Wildcards
                 accepted.
         '''
-        if server == "":
-            self.send("VERSION")
-        else:
-            self.send("VERSION {0}".format(server))
+        self.send("VERSION {0}".format(server))
 
 
     def who(self, mask = "", oponly = False):
@@ -716,12 +651,10 @@ class Core(object):
             mask -- Optional. Narrows down the query. Wildcards accepted.
             oponly -- Optional. List only Operators. Defaults to False.
         '''
-        if mask == "" and not oponly:
-            self.send("WHO")
-        elif not oponly:
-            self.send("WHO {0}".format(mask))
-        else:
+        if oponly:
             self.send("WHO {0} o".format(mask))
+        else:
+            self.send("WHO {0}".format(mask))
 
 
     def whois(self, nickname, server = ""):
@@ -732,10 +665,7 @@ class Core(object):
             server -- Optional. Forwards the request to a server. Wildcards
                 accepted.
         '''
-        if server == "":
-            self.send("WHOIS {0}".format(nickname))
-        else:
-            self.send("WHOIS {1} {0}".format(nickname, server))
+        self.send("WHOIS {1} {0}".format(nickname, server))
 
 
     def whowas(self, nickname, count = "", server = ""):
@@ -748,12 +678,7 @@ class Core(object):
             server -- Optional. Forwards the request to a server. Wildcards
                 accepted.
         '''
-        if count == "" and server == "":
-            self.send("WHOWAS {0}".format(nickname))
-        elif server == "":
-            self.send("WHOWAS {0} {1}".format(nickname, count))
-        else:
-            self.send("WHOWAS {0} {1} {2}".format(nickname, count, server))
+        self.send("WHOWAS {0} {1} {2}".format(nickname, count, server))
 
 
 # =============================== [ OPER CORE ] ===============================
@@ -797,11 +722,7 @@ class OperCore(Core):
             remoteserv -- Optional. Pass on the CONNECT request to the remote
                 remote server instead
         '''
-        if remoteserv == "":
-            self.send("CONNECT {0} {1}".format(targetserv, port))
-        else:
-            self.send("CONNECT {0} {1} {2}".format(
-                targetserv, port, remoteserv))
+        self.send("CONNECT {0} {1} {2}".format(targetserv, port, remoteserv))
 
     def die(self, password = ""):
         '''Shuts down the local server.
