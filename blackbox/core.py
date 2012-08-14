@@ -803,11 +803,13 @@ class OperCore(Core):
             self.send("CONNECT {0} {1} {2}".format(
                 targetserv, port, remoteserv))
 
+    def die(self, password = ""):
+        '''Shuts down the local server.
 
-    def die(self):
-        '''Shuts down the local server.'''
-        self.send("DIE")
-
+        Arguments:
+            password -- Optional. Required on some IRCds, like Unreal.
+        '''
+        self.send("DIE {0}".format(password))
 
     def kill(self, user, reason):
         '''Terminates the connection of a client with the server network.
@@ -829,9 +831,14 @@ class OperCore(Core):
         self.send("OPER {0} {1}".format(username, password))
 
 
-    def rehash(self):
-        '''Forces the local server to reprocess its configuration file.'''
-        self.send("REHASH")
+    def rehash(self, password = ""):
+        '''Forces the local server to reprocess its configuration file.
+
+        Arguments:
+            password -- Optional. Required on some IRCds, like Unreal.
+        
+        '''
+        self.send("REHASH {0}".format(password))
 
 
     def restart(self):
