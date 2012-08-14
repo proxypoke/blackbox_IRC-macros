@@ -86,6 +86,8 @@ class Core(object):
         else:
             self._isConnected = False
 
+        # some book-keeping (might get extended in the future)
+        self._nick = ""
 
     def _createSocket(self):
         '''(Re)create the internal socket.
@@ -264,7 +266,12 @@ class Core(object):
         Arguments:
             nick -- a valid nickname (no spaces, special characters restricted)
         '''
+        self._nick = nick
         self.send("NICK {0}".format(nick))
+
+    def getnick(self):
+        '''Returns the current nickname.'''
+        return self._nick
 
 
     def username(self, user, real=None):
