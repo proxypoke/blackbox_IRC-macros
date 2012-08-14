@@ -11,7 +11,9 @@
 
 '''blackbox.blackbox - the main classes of blackbox
 
-This module provides the 
+This module provides the slightly higher level IRC and Oper classes, which are
+meant to be used instead of Core and OperCore. They provide some handy macros
+and composite methods, like advanced channel privileges.
 '''
 
 from . import core
