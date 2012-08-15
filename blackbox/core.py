@@ -754,17 +754,17 @@ class OperCore(Core):
 
     def rehash(self, password = ""):
         '''Forces the local server to reprocess its configuration file.
-
-        Arguments:
-            password -- Optional. Required on some IRCds, like Unreal.
-        
         '''
-        self.send("REHASH {0}".format(password))
+        self.send("REHASH")
 
 
     def restart(self):
-        '''Forces the local server to restart itself.  '''
-        self.send("RESTART")
+        '''Forces the local server to restart itself.
+
+        Arguments:
+            password -- Optional. Required on some IRCds, like Unreal.
+        '''
+        self.send("RESTART {0}".format(password))
 
 
     def service(self, nick, distribution, info):
