@@ -752,13 +752,13 @@ class OperCore(Core):
         self.send("OPER {0} {1}".format(username, password))
 
 
-    def rehash(self, password = ""):
+    def rehash(self):
         '''Forces the local server to reprocess its configuration file.
         '''
         self.send("REHASH")
 
 
-    def restart(self):
+    def restart(self, password = ""):
         '''Forces the local server to restart itself.
 
         Arguments:
