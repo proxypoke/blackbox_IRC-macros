@@ -113,8 +113,7 @@ class Core(object):
 
 
     def close(self):
-        '''Close the socket, set socketOpen to False. 
-        Also close the log file if logging was active.'''
+        '''Close the socket, terminating the connection (if any).'''
         if self._socketOpen:
             self._irc.close()
             self._socketOpen = False
