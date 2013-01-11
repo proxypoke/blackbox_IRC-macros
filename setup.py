@@ -4,15 +4,15 @@
 # Offical IRC channel: irc://irc.datnode.net/hacking
 # Offical repository on github: https://github.com/proxypoke/blackbox_IRC-macros
 
-# This program, hereafter called 'blackbox', 
-# is Free Software under the terms of the 
-# GNU General Public license, which can be found at 
+# This program, hereafter called 'blackbox',
+# is Free Software under the terms of the
+# GNU General Public license, which can be found at
 # http://www.gnu.org/copyleft/gpl.html.
 
 from distutils.core import setup
 
 setup( name = 'blackbox'
-     , version = '0.6'
+     , version = '0.7'
      , author = 'slowpoke (Proxy)'
      , author_email = 'proxypoke@lavabit.com'
      , url = 'https://github.com/proxypoke/blackbox_IRC-macros'
