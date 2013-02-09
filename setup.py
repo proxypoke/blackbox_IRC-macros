@@ -10,9 +10,10 @@
 # http://www.gnu.org/copyleft/gpl.html.
 
 from distutils.core import setup
+import blackbox
 
 setup( name = 'blackbox'
-     , version = '0.7'
+     , version = blackbox.__version__
      , author = 'slowpoke (Proxy)'
      , author_email = 'proxypoke@lavabit.com'
      , url = 'https://github.com/proxypoke/blackbox_IRC-macros'
