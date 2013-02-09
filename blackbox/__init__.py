@@ -4,9 +4,9 @@
 # Offical IRC channel: irc://irc.datnode.net/hacking
 # Offical repository on github: https://github.com/proxypoke/blackbox_IRC-macros
 #
-# This program, hereafter called "blackbox", 
-# is Free Software under the terms of the 
-# GNU General Public license, which can be found at 
+# This program, hereafter called "blackbox",
+# is Free Software under the terms of the
+# GNU General Public license, which can be found at
 # http://www.gnu.org/copyleft/gpl.html.
 
 '''blackbox IRC macros - A python module to abstract the IRC protocol
@@ -19,10 +19,12 @@ interface with an IRC server.
 
 This package directly exports the following classes:
 
-   IRC -- universal IRC objects, minus operator only methods. 
+   IRC -- universal IRC objects, minus operator only methods.
    Oper -- same as above, but with said operator methods.
    Parser -- a simple, but complete IRC parser.
 '''
+
+__version__ = "0.7.1"
 
 from .core import IRCError
 
