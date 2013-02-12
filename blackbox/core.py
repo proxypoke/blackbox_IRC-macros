@@ -4,9 +4,9 @@
 # Offical IRC channel: irc://irc.datnode.net/hacking
 # Offical repository on github: https://github.com/proxypoke/blackbox_IRC-macros
 #
-# This program, hereafter called "blackbox", 
-# is Free Software under the terms of the 
-# GNU General Public license, which can be found at 
+# This program, hereafter called "blackbox",
+# is Free Software under the terms of the
+# GNU General Public license, which can be found at
 # http://www.gnu.org/copyleft/gpl.html.
 
 '''blackbox.core - implements the basic IRC RFC commands as a usable base class
@@ -51,7 +51,7 @@ class Core(object):
 
     def __init__(self, **kwargs):
         '''Initialize the object, create the socket, set the attributes to
-        their default values. 
+        their default values.
 
         Keyword Arguments:
             ssl -- Turn on ssl. Defaults to False.
@@ -68,7 +68,7 @@ class Core(object):
         self._ssl = kwargs.get("ssl", False)
         self._encoding = kwargs.get("encoding", "utf-8")
         self._pretend = kwargs.get("pretend", False)
-        
+
         self._buffer = queue.Queue()
         self.data = None
         self._socketOpen = False
@@ -142,7 +142,7 @@ class Core(object):
         self._irc.connect((host, port))
         self._isConnected = True
 
-        
+
     def send(self, data):
         '''Send raw data to the IRC server, adding the trailing CRNL.
 
@@ -155,7 +155,7 @@ class Core(object):
         data = str(data)
 
         logging.getLogger("blackbox.out").info(data)
-        
+
         # Pretend Mode
         if self._pretend:
             print(data)
@@ -289,7 +289,7 @@ class Core(object):
         Arguments:
             channels -- the target channels, separated by ','
             keywords -- Optional. For channels with mode +k, separated by ','
-        
+
         Note: When joining multiple channels with and without mode +k, either
         put the channels with +k first so their keywords get assigned correctly,
         or replace empty keywords with '*'. The first method is advised.
@@ -347,24 +347,24 @@ class Core(object):
 
         Arguments:
             target - either a user or channel (with the usual hash)
-            msg - an action to 'do'. 
+            msg - an action to 'do'.
         '''
         self.send("PRIVMSG {0} :\x01ACTION {1}\x01".format(target, msg))
 
 
-    def mode(self, target, mode, args = ""):
+    def mode(self, target, mode = "", args = ""):
         '''Set the mode(s) of a channel or user, with optional arguments.
 
         Arguments:
             target -- the target channel or user
-            mode -- one or more valid mode characters
+            mode -- Optional. One or more valid mode characters
             args -- Optional. One or more arguments (eg usernames).
         '''
         self.send("MODE {0} {1} {2}".format(target, mode, args))
 
 
     def kick(self, channel, user, reason = ""):
-        '''Kick a user from a channel. 
+        '''Kick a user from a channel.
         Usually requires privileges in that channel.
 
         Arguments:
@@ -376,7 +376,7 @@ class Core(object):
 
 
     def away(self, message = ""):
-        '''Mark yourself as away, specifying a message to be sent to others. If 
+        '''Mark yourself as away, specifying a message to be sent to others. If
         message is omitted, the away status will be removed.
 
         Arguments:
@@ -459,11 +459,11 @@ class Core(object):
 
 
     def ison(self, nicknames):
-        '''Requests information about the online status of one or more 
+        '''Requests information about the online status of one or more
         nicknames. The server returns all nicknames that are currently online.
 
         Arguments:
-            nicknames -- Either a space separated string of nicknames, or a 
+            nicknames -- Either a space separated string of nicknames, or a
                 python list of strings.
         '''
         # check type of kwarg
@@ -481,17 +481,17 @@ class Core(object):
         all known servers are returned.
 
         Arguments:
-            servmask -- Optional. Only servers matching servmask will be 
+            servmask -- Optional. Only servers matching servmask will be
                 returned. Accepts wildcards.
-            server -- Optional. Queries the specified server instead of the 
+            server -- Optional. Queries the specified server instead of the
                 local server.
         '''
         self.send("LINKS {1} {0}".format(servmask, server))
 
 
     def chanlist(self, channels = "", server = ""):
-        '''Queries for a list of channels and their topics. If channels is 
-        specified, lists only the status of those channels. If server is 
+        '''Queries for a list of channels and their topics. If channels is
+        specified, lists only the status of those channels. If server is
         specified, forwards the request to that server.
 
         Arguments:
@@ -547,7 +547,7 @@ class Core(object):
 
 
     def servlist(self, mask = "", type_ = ""):
-        '''Lists services connected to the network and visible to the user, 
+        '''Lists services connected to the network and visible to the user,
         matching mask if specified and of the matching type if specified.
 
         Arguments:
@@ -562,9 +562,9 @@ class Core(object):
         the server argument, the local server is queried.
 
         Arguments:
-            query -- A letter describing the query. Mostly implementation 
+            query -- A letter describing the query. Mostly implementation
                 dependant. The following SHOULD be supported by all servers:
-                    l -- a list of the server's connections, their length and 
+                    l -- a list of the server's connections, their length and
                         bandwidth usage
                     m -- usage count of all commands supported by the server
                     o -- a list of privileged users, operators
@@ -576,7 +576,7 @@ class Core(object):
 
 
     def time(self, server = ""):
-        '''Queries the local time of the local server, or a remote server if 
+        '''Queries the local time of the local server, or a remote server if
         specified.
 
         Arguments:
@@ -687,7 +687,7 @@ class OperCore(Core):
     '''This class implements all basic server commands as defined in the IRC
     RFC, including the commands reserved for IRC Operators. If your
     application does not have or need these privileges, consider using the
-    Core class instead.  
+    Core class instead.
 
     WARNING: ALL COMMANDS ARE UNTESTED. USE AT OWN RISK!
 
@@ -709,11 +709,11 @@ class OperCore(Core):
 
         '''
         Core.__init__(self, **kwargs)
-        
+
 
     def servconnect(self, targetserv, port, remoteserv = ""):
         '''Requests the server to try to establish a new connection to another
-        server. 
+        server.
 
         Arguments:
             targetserv -- Server to connect to
